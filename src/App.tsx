@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { supabase } from './lib/supabase'
+import { verificarConexion } from './lib/supabase'
 
 function App() {
   const [estado, setEstado] = useState('probando...')
 
   useEffect(() => {
-    supabase.auth.getSession()
-      .then(({ error }) => setEstado(error ? 'error: ' + error.message : 'conectado ✓'))
+    verificarConexion()
+      .then(() => setEstado('conectado ✓'))
       .catch(e => setEstado('error: ' + e.message))
   }, [])
 

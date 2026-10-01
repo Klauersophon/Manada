@@ -1,75 +1,45 @@
-# React + TypeScript + Vite
+# Manada 🐾
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+App para que los miembros de un grupo familiar coordinen el cuidado cotidiano de sus mascotas:
+quién paseó al perro, quién dio la comida, qué falta hacer hoy.
 
-Currently, two official plugins are available:
+**Estado actual:** el esqueleto técnico está listo y conectado a Supabase. Todavía no hay
+esquema de datos, login ni pantallas de la app; la portada solo verifica la conexión.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack: React + Vite en el front, Supabase como backend
 
-## React Compiler
+- React 19 + TypeScript, empaquetado con Vite.
+- Tailwind CSS 4 vía el plugin `@tailwindcss/vite`.
+- Supabase para base de datos y autenticación, usado desde el navegador con la publishable key.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Levantarlo en local: instalar, configurar `.env.local` y correr `dev`
 
-## Expanding the ESLint configuration
+Requiere Node 22 o superior.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```sh
+npm install
+cp .env.example .env.local   # completar con los valores del proyecto de Supabase
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Los valores de `.env.local` están en Supabase → Project Settings → API. El archivo no se sube
+a git.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Si la portada muestra `conectado ✓`, el proyecto de Supabase responde y la key es válida. Si
+muestra un error, revisar que el proyecto no esté pausado: en el plan gratis Supabase pausa los
+proyectos inactivos.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Scripts
 
-```
+| Comando           | Qué hace                                  |
+| ----------------- | ----------------------------------------- |
+| `npm run dev`     | Servidor de desarrollo con recarga en vivo |
+| `npm run build`   | Chequeo de tipos y build de producción    |
+| `npm run lint`    | ESLint sobre todo el proyecto             |
+| `npm run preview` | Sirve el build de producción en local     |
+
+## Pendiente para tener una primera versión usable
+
+- Esquema inicial: hogares, miembros, mascotas y actividades, con reglas RLS por hogar.
+- Login y registro con Supabase Auth.
+- Pantallas para ver y marcar las actividades del día.
