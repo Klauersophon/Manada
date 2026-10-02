@@ -1,18 +1,17 @@
-import { useEffect, useState } from 'react'
-import { verificarConexion } from '../lib/supabase'
+import { supabase } from '../lib/supabase'
+import { useSesion } from '../auth/sesion'
 
 function Inicio() {
-  const [estado, setEstado] = useState('probando...')
-
-  useEffect(() => {
-    verificarConexion()
-      .then(() => setEstado('conectado ✓'))
-      .catch(e => setEstado('error: ' + e.message))
-  }, [])
+  const { sesion } = useSesion()
 
   return (
-    <div className="min-h-screen bg-green-900 text-white grid place-items-center">
-      <h1 className="text-3xl font-bold">Manada 🐾 — {estado}</h1>
+    <div className="min-h-screen bg-green-900 text-white grid place-items-center px-4">
+      <div className="text-center space-y-4">
+        <h1 className="text-3xl font-bold">Hola, {sesion?.user.email} 🐾</h1>
+        <button onClick={() => supabase.auth.signOut()} className="underline">
+          Cerrar sesión
+        </button>
+      </div>
     </div>
   )
 }

@@ -1,8 +1,14 @@
 import { createBrowserRouter } from 'react-router'
+import RequiereSesion from './auth/RequiereSesion'
+import Ingresar from './pages/Ingresar'
 import Inicio from './pages/Inicio'
 import NoEncontrado from './pages/NoEncontrado'
 
 export const router = createBrowserRouter([
-  { path: '/', element: <Inicio /> },
+  { path: '/ingresar', element: <Ingresar /> },
+  {
+    element: <RequiereSesion />,
+    children: [{ path: '/', element: <Inicio /> }],
+  },
   { path: '*', element: <NoEncontrado /> },
 ])
