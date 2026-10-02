@@ -37,6 +37,16 @@ proyectos inactivos.
 | `npm run build`   | Chequeo de tipos y build de producción    |
 | `npm run lint`    | ESLint sobre todo el proyecto             |
 | `npm run preview` | Sirve el build de producción en local     |
+| `npm run db:types` | Regenera los tipos de TypeScript desde el esquema de Supabase |
+| `npm run db:test`  | Corre los tests de seguridad de la base (requiere `npx supabase start`) |
+
+## Cambios en la base: siempre por migración
+
+El esquema vive en `supabase/migrations/`. Para cambiarlo, crear una migración con
+`npx supabase migration new <nombre>`, probarla en local con `npm run db:test` y aplicarla con
+`npx supabase db push`. Después, correr `npm run db:types` para que el front vea los cambios.
+
+Cambiar tablas o policies desde el dashboard deja el repo desactualizado.
 
 ## Pendiente para tener una primera versión usable
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { verificarConexion } from './lib/supabase'
+import { verificarConexion } from '../lib/supabase'
 
-function App() {
+function Inicio() {
   const [estado, setEstado] = useState('probando...')
 
   useEffect(() => {
@@ -17,4 +17,4 @@ function App() {
   )
 }
 
-export default App
+export default Inicio
