@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import Pantalla from '../components/Pantalla'
 import { alerta, boton, botonSecundario, tarjeta } from '../components/estilos'
+import Mascotas from '../mascotas/Mascotas'
 import type { Hogar } from './useMiHogar'
 
 type Miembro = { user_id: string; display_name: string; role: string }
@@ -93,6 +94,8 @@ function MiHogar({ hogar }: { hogar: Hogar }) {
 
   return (
     <Pantalla titulo={hogar.nombre}>
+      <Mascotas circleId={id} esAdmin={esAdmin} />
+
       <section className={tarjeta}>
         <h2 className="text-lg font-semibold">Miembros</h2>
         <ul className="space-y-1" aria-label="Miembros">
