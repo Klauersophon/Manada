@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from 'react'
-import { Navigate } from 'react-router'
+import { Navigate, useSearchParams } from 'react-router'
 import type { AuthError } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import { useSesion } from '../auth/sesion'
+import { rutaDeVuelta } from '../auth/volver'
+import { alerta, boton, campo } from '../components/estilos'
 
 function traducirError(error: AuthError) {
   switch (error.code) {
@@ -20,6 +22,8 @@ function traducirError(error: AuthError) {
 // enlace abre Safari y la sesión no llega a la app.
 function Ingresar() {
   const { sesion } = useSesion()
+  const [params] = useSearchParams()
+  const volver = rutaDeVuelta(params)
   const [correo, setCorreo] = useState('')
   const [codigo, setCodigo] = useState('')
   const [enviado, setEnviado] = useState(false)
@@ -27,7 +31,7 @@ function Ingresar() {
   const [error, setError] = useState<string | null>(null)
 
   // Al verificar el código, onAuthStateChange actualiza la sesión y esta línea redirige.
-  if (sesion) return <Navigate to="/" replace />
+  if (sesion) return <Navigate to={volver} replace />
 
   async function pedirAcceso(e: FormEvent) {
     e.preventDefault()
@@ -35,7 +39,7 @@ function Ingresar() {
     setError(null)
     const { error } = await supabase.auth.signInWithOtp({
       email: correo.trim(),
-      options: { emailRedirectTo: window.location.origin },
+      options: { emailRedirectTo: window.location.origin + volver },
     })
     setOcupado(false)
     if (error) setError(traducirError(error))
@@ -60,9 +64,6 @@ function Ingresar() {
     setCodigo('')
     setError(null)
   }
-
-  const campo = 'w-full rounded-lg px-3 py-2 text-gray-900 bg-white'
-  const boton = 'w-full rounded-lg bg-amber-400 px-3 py-2 font-semibold text-green-950 disabled:opacity-60'
 
   return (
     <div className="min-h-screen bg-green-900 text-white grid place-items-center px-4">
@@ -111,7 +112,7 @@ function Ingresar() {
           </form>
         )}
 
-        {error && <p role="alert" className="rounded-lg bg-red-900/60 px-3 py-2">{error}</p>}
+        {error && <p role="alert" className={alerta}>{error}</p>}
       </div>
     </div>
   )

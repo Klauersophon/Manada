@@ -128,10 +128,10 @@ export type Database = {
         }
         Insert: {
           circle_id: string
-          code: string
+          code?: string
           created_at?: string | null
           created_by?: string | null
-          expires_at: string
+          expires_at?: string
           revoked?: boolean
         }
         Update: {
@@ -260,6 +260,13 @@ export type Database = {
       create_circle: {
         Args: { circle_name: string; member_name: string }
         Returns: string
+      }
+      preview_invite: {
+        Args: { invite_code: string }
+        Returns: {
+          circle_id: string
+          circle_name: string
+        }[]
       }
     }
     Enums: {
