@@ -7,12 +7,15 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "db:types": "supabase gen types typescript --linked --schema public > src/lib/database.types.ts",
+    "db:test": "supabase test db"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "react-router": "^7.18.4"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
