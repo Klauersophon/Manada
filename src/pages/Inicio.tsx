@@ -1,19 +1,15 @@
-import { supabase } from '../lib/supabase'
-import { useSesion } from '../auth/sesion'
+import Pantalla from '../components/Pantalla'
+import { alerta } from '../components/estilos'
+import Bienvenida from '../hogar/Bienvenida'
+import MiHogar from '../hogar/MiHogar'
+import { useMiHogar } from '../hogar/useMiHogar'
 
 function Inicio() {
-  const { sesion } = useSesion()
+  const { hogar, cargando, error, recargar } = useMiHogar()
 
-  return (
-    <div className="min-h-screen bg-green-900 text-white grid place-items-center px-4">
-      <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold">Hola, {sesion?.user.email} 🐾</h1>
-        <button onClick={() => supabase.auth.signOut()} className="underline">
-          Cerrar sesión
-        </button>
-      </div>
-    </div>
-  )
+  if (cargando) return <Pantalla><p>Cargando...</p></Pantalla>
+  if (error) return <Pantalla><p role="alert" className={alerta}>{error}</p></Pantalla>
+  return hogar ? <MiHogar hogar={hogar} /> : <Bienvenida onListo={recargar} />
 }
 
 export default Inicio
