@@ -186,6 +186,7 @@ export type Database = {
       }
       pets: {
         Row: {
+          archived_at: string | null
           circle_id: string
           created_at: string | null
           id: string
@@ -195,6 +196,7 @@ export type Database = {
           species: string
         }
         Insert: {
+          archived_at?: string | null
           circle_id: string
           created_at?: string | null
           id?: string
@@ -204,6 +206,7 @@ export type Database = {
           species: string
         }
         Update: {
+          archived_at?: string | null
           circle_id?: string
           created_at?: string | null
           id?: string
