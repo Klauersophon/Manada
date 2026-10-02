@@ -5,9 +5,9 @@ create extension if not exists pgtap with schema extensions;
 select plan(19);
 
 insert into auth.users (id, email) values
-  ('00000000-0000-0000-0000-00000000000a', 'ana@test.cl'),
-  ('00000000-0000-0000-0000-00000000000b', 'beto@test.cl'),
-  ('00000000-0000-0000-0000-00000000000c', 'caro@test.cl');
+  ('00000000-0000-0000-0000-00000000000a', 'ana@pgtap.test'),
+  ('00000000-0000-0000-0000-00000000000b', 'beto@pgtap.test'),
+  ('00000000-0000-0000-0000-00000000000c', 'caro@pgtap.test');
 
 -- Sin sesión no se puede crear un círculo ni aceptar invitaciones
 set local role anon;
