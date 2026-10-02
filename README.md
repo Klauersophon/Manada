@@ -3,8 +3,8 @@
 App para que los miembros de un grupo familiar coordinen el cuidado cotidiano de sus mascotas:
 quién paseó al perro, quién dio la comida, qué falta hacer hoy.
 
-**Estado actual:** el esqueleto técnico está listo y conectado a Supabase. Todavía no hay
-esquema de datos, login ni pantallas de la app; la portada solo verifica la conexión.
+**Estado actual:** hay ingreso con enlace mágico o código por correo, y el esquema de datos con
+sus reglas de seguridad está en Supabase. Faltan las pantallas de hogar, mascotas y tareas.
 
 ## Stack: React + Vite en el front, Supabase como backend
 
@@ -25,9 +25,18 @@ npm run dev
 Los valores de `.env.local` están en Supabase → Project Settings → API. El archivo no se sube
 a git.
 
-Si la portada muestra `conectado ✓`, el proyecto de Supabase responde y la key es válida. Si
-muestra un error, revisar que el proyecto no esté pausado: en el plan gratis Supabase pausa los
-proyectos inactivos.
+Si al pedir el acceso aparece un error de conexión, revisar que el proyecto no esté pausado: en
+el plan gratis Supabase pausa los proyectos inactivos.
+
+## Ingreso: el correo trae enlace y código
+
+En el celular, una app instalada (PWA) no comparte sesión con el navegador, así que el enlace
+del correo abre la sesión en el navegador y no en la app. Por eso el correo también trae un
+código para escribirlo en la app.
+
+La plantilla del correo vive en `supabase/templates/acceso.html`. Supabase en la nube no la toma
+del repo: hay que copiarla a mano en Authentication → Email Templates, en "Magic Link" y en
+"Confirm signup".
 
 ## Scripts
 
