@@ -63,7 +63,7 @@ try {
   await esperarTexto(ana, 'Todavía no hay mascotas')
   ok('el inicio es la vista del día y avisa que faltan mascotas', ruta(ana) === '/')
 
-  await irA(ana, 'Hogar')
+  await irA(ana, 'Manada')
   await esperarTexto(ana, 'Agrega la primera')
   await clicTexto(ana, 'Agregar mascota')
   await ana.type('#mascota-nombre', 'Luna')
@@ -98,11 +98,11 @@ try {
   ok('hoy muestra solo las tareas activas del día, primero las con hora',
     JSON.stringify(await titulos(ana, 'Pendientes')) === '["Paseo","Comida"]', JSON.stringify(await titulos(ana, 'Pendientes')))
   ok('el progreso parte en 0', (await texto(ana)).includes('0 de 2 hechas'))
-  ok('la tarea con responsable dice a quién le toca', (await itemDe(ana, 'Pendientes', 'Paseo')).includes('Le toca a ti'))
-  ok('la tarea sin responsable dice "Sin asignar"', (await itemDe(ana, 'Pendientes', 'Comida')).includes('Sin asignar'))
+  ok('la tarea con responsable dice a quién le toca', (await itemDe(ana, 'Pendientes', 'Paseo')).includes('te toca a ti'))
+  ok('la tarea sin responsable dice "sin asignar"', (await itemDe(ana, 'Pendientes', 'Comida')).includes('sin asignar'))
 
   // Beto se une y toma la comida
-  await irA(ana, 'Hogar')
+  await irA(ana, 'Manada')
   await esperarTexto(ana, 'Crear link de invitación')
   await clicTexto(ana, 'Crear link de invitación')
   await ana.waitForSelector('[data-link]')
@@ -116,13 +116,13 @@ try {
   await clicTexto(beto, 'Unirme')
   await beto.waitForSelector('ul[aria-label="Pendientes"]')
   ok('al unirse, el miembro llega a la vista del día', ruta(beto) === '/')
-  await beto.waitForFunction(() => document.body.innerText.includes('Le toca a Ana'), { timeout: 10000 })
+  await beto.waitForFunction(() => document.body.innerText.includes('le toca a Ana'), { timeout: 10000 })
   ok('el miembro ve a quién le toca cada tarea', true)
 
   await clicEn(beto, 'Pendientes', 'Comida', 'Lo hago yo')
   await esperarTexto(beto, 'Soltar')
-  ok('"Lo hago yo" asigna la tarea del día', (await itemDe(beto, 'Pendientes', 'Comida')).includes('Le toca a ti'))
-  await clicEn(beto, 'Pendientes', 'Comida', '✓ Hecho')
+  ok('"Lo hago yo" asigna la tarea del día', (await itemDe(beto, 'Pendientes', 'Comida')).includes('te toca a ti'))
+  await clicEn(beto, 'Pendientes', 'Comida', 'Hecho')
   await beto.waitForSelector('ul[aria-label="Hechas"]')
   ok('marcar hecha la mueve a "Hechas" a mi nombre', (await itemDe(beto, 'Hechas', 'Comida')).includes('Tú ·'))
   ok('el progreso avanza', (await texto(beto)).includes('1 de 2 hechas'))
@@ -132,7 +132,7 @@ try {
   const hechaPorBeto = await itemDe(ana, 'Hechas', 'Comida')
   ok('los demás ven quién la hizo y no pueden deshacerla',
     hechaPorBeto.includes('Beto ·') && !hechaPorBeto.includes('Deshacer'), hechaPorBeto)
-  await clicEn(ana, 'Pendientes', 'Paseo', '✓ Hecho')
+  await clicEn(ana, 'Pendientes', 'Paseo', 'Hecho')
   await esperarTexto(ana, '2 de 2 hechas')
   await clicEn(ana, 'Hechas', 'Paseo', 'Deshacer')
   await esperarTexto(ana, '1 de 2 hechas')

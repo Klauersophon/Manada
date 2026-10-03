@@ -46,7 +46,7 @@ export const esperarTexto = (page, t) =>
 export const clicTexto = (page, t) =>
   page.evaluate(t => [...document.querySelectorAll('button')].find(b => b.innerText.trim() === t).click(), t)
 export const irA = (page, pestana) =>
-  page.evaluate(p => [...document.querySelectorAll('nav a')].find(a => a.innerText === p).click(), pestana)
+  page.evaluate(p => [...document.querySelectorAll('nav a')].find(a => a.textContent.includes(p)).click(), pestana)
 
 export async function pedirAcceso(page, email) {
   await page.waitForSelector('#correo')

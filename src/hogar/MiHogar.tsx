@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import Pantalla from '../components/Pantalla'
-import { alerta, boton, botonSecundario, tarjeta } from '../components/estilos'
+import { useSesion } from '../auth/sesion'
+import Avatar from '../components/Avatar'
+import { alerta, etiquetaSeccion, fila } from '../components/estilos'
 import Mascotas from '../mascotas/Mascotas'
 import type { Hogar } from './useMiHogar'
 
@@ -35,6 +37,7 @@ async function buscarDatos(circleId: string, esAdmin: boolean) {
 
 function MiHogar({ hogar }: { hogar: Hogar }) {
   const { id, esAdmin } = hogar
+  const yo = useSesion().sesion?.user.id
   const [miembros, setMiembros] = useState<Miembro[]>([])
   const [invitaciones, setInvitaciones] = useState<Invitacion[]>([])
   const [aviso, setAviso] = useState<string | null>(null)
@@ -92,17 +95,26 @@ function MiHogar({ hogar }: { hogar: Hogar }) {
     else cargar()
   }
 
+  const personas = miembros.length === 1 ? '1 persona' : `${miembros.length} personas`
+
   return (
-    <Pantalla titulo={hogar.nombre} navegacion>
+    <Pantalla titulo={hogar.nombre} antetitulo={miembros.length ? personas : undefined} navegacion>
       <Mascotas circleId={id} esAdmin={esAdmin} />
 
-      <section className={tarjeta}>
-        <h2 className="text-lg font-semibold">Miembros</h2>
-        <ul className="space-y-1" aria-label="Miembros">
+      <section className="space-y-2.5">
+        <h2 className={etiquetaSeccion}>Miembros</h2>
+        <ul className="space-y-2" aria-label="Miembros">
           {miembros.map(m => (
-            <li key={m.user_id} className="flex justify-between">
-              <span>{m.display_name}</span>
-              <span className="text-sm text-white/70">
+            <li key={m.user_id} className={fila}>
+              <Avatar id={m.user_id} nombre={m.display_name} />
+              <span className="min-w-0 flex-1 font-semibold">
+                {m.user_id === yo ? `${m.display_name} (tú)` : m.display_name}
+              </span>
+              <span
+                className={`rounded-full border px-2 py-0.5 text-[11px] ${
+                  m.role === 'admin' ? 'border-moss font-semibold text-moss' : 'border-line-strong font-medium text-ink-soft'
+                }`}
+              >
                 {m.role === 'admin' ? 'Admin' : 'Miembro'}
               </span>
             </li>
@@ -111,25 +123,35 @@ function MiHogar({ hogar }: { hogar: Hogar }) {
       </section>
 
       {hogar.esAdmin && (
-        <section className={tarjeta}>
-          <h2 className="text-lg font-semibold">Invitar a tu familia</h2>
-          <p className="text-sm text-white/80">
+        <section className="space-y-3 rounded-[14px] bg-ink p-[17px] text-card">
+          <h2 className="text-[17px] font-bold">Invitar a tu familia</h2>
+          <p className="text-[13.5px] opacity-80">
             El link sirve para varias personas durante 7 días. Puedes revocarlo cuando quieras.
           </p>
-          <button onClick={crearInvitacion} disabled={ocupado} className={boton}>
+          <button
+            onClick={crearInvitacion}
+            disabled={ocupado}
+            className="w-full rounded-xl bg-card px-4 py-3 font-semibold text-ink disabled:opacity-40"
+          >
             {ocupado ? 'Creando...' : 'Crear link de invitación'}
           </button>
-          <ul className="space-y-3" aria-label="Invitaciones activas">
+          <ul className="space-y-2.5" aria-label="Invitaciones activas">
             {invitaciones.map(inv => (
-              <li key={inv.code} className="space-y-2 rounded-lg bg-green-950/40 p-3">
-                <p className="break-all font-mono text-sm" data-link>{linkDe(inv.code)}</p>
+              <li key={inv.code} className="space-y-2 rounded-[10px] bg-card/15 p-3">
+                <p className="font-mono text-sm break-all" data-link>{linkDe(inv.code)}</p>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs text-white/70">Vence el {fecha(inv.expires_at)}</span>
+                  <span className="text-xs opacity-75">Vence el {fecha(inv.expires_at)}</span>
                   <div className="flex gap-2">
-                    <button onClick={() => compartir(inv.code)} className={botonSecundario}>
+                    <button
+                      onClick={() => compartir(inv.code)}
+                      className="rounded-lg bg-card px-3 py-1.5 text-[13px] font-semibold text-ink"
+                    >
                       Compartir
                     </button>
-                    <button onClick={() => revocar(inv.code)} className={botonSecundario}>
+                    <button
+                      onClick={() => revocar(inv.code)}
+                      className="rounded-lg border border-card/40 px-3 py-1.5 text-[13px] font-medium"
+                    >
                       Revocar
                     </button>
                   </div>

@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
 import { supabase } from '../lib/supabase'
 import Pantalla from '../components/Pantalla'
-import { alerta, boton, campo, tarjeta } from '../components/estilos'
+import { alerta, boton, campo, etiquetaCampo, tarjeta } from '../components/estilos'
 
 // Acepta el link completo o solo el código, porque lo más probable es que peguen el link.
 function extraerCodigo(valor: string) {
@@ -41,8 +41,8 @@ function Bienvenida({ onListo }: { onListo: () => void }) {
       <p>Para empezar, crea el hogar de tus mascotas o únete al de tu familia.</p>
 
       <form onSubmit={crear} className={tarjeta}>
-        <h2 className="text-lg font-semibold">Crear mi hogar</h2>
-        <label htmlFor="nombre-hogar" className="block">Nombre del hogar</label>
+        <h2 className="text-[17px] font-bold">Crear mi hogar</h2>
+        <label htmlFor="nombre-hogar" className={etiquetaCampo}>Nombre del hogar</label>
         <input
           id="nombre-hogar"
           required
@@ -51,7 +51,7 @@ function Bienvenida({ onListo }: { onListo: () => void }) {
           onChange={e => setNombreHogar(e.target.value)}
           className={campo}
         />
-        <label htmlFor="mi-nombre" className="block">Tu nombre, como te verán los demás</label>
+        <label htmlFor="mi-nombre" className={etiquetaCampo}>Tu nombre, como te verán los demás</label>
         <input
           id="mi-nombre"
           required
@@ -65,8 +65,8 @@ function Bienvenida({ onListo }: { onListo: () => void }) {
       </form>
 
       <form onSubmit={unirse} className={tarjeta}>
-        <h2 className="text-lg font-semibold">Tengo una invitación</h2>
-        <label htmlFor="codigo-invitacion" className="block">Pega el link o el código</label>
+        <h2 className="text-[17px] font-bold">Tengo una invitación</h2>
+        <label htmlFor="codigo-invitacion" className={etiquetaCampo}>Pega el link o el código</label>
         <input
           id="codigo-invitacion"
           required

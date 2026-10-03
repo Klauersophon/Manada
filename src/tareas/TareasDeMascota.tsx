@@ -1,6 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
-import { alerta, boton, botonSecundario, campo, tarjeta } from '../components/estilos'
+import {
+  alerta, boton, botonAgregar, botonSecundario, campo, etiquetaCampo, etiquetaSeccion, fila, glifo,
+} from '../components/estilos'
 import { useMiembros, type Miembro } from '../hogar/useMiembros'
 import { DIAS, hora, resumenDias } from '../hoy/calendario'
 
@@ -76,7 +78,7 @@ function FormTarea({
   }
 
   return (
-    <form onSubmit={enviar} className="space-y-3 rounded-lg bg-green-950/40 p-3">
+    <form onSubmit={enviar} className="space-y-3 rounded-[14px] border border-line bg-card p-4">
       <div className="flex flex-wrap gap-2" aria-label="Sugerencias">
         {SUGERENCIAS.map(s => (
           <button
@@ -87,14 +89,14 @@ function FormTarea({
               setIcono(s.icono)
               if (!nombre.trim()) setNombre(s.nombre)
             }}
-            className={`rounded-full px-3 py-1 text-sm ${icono === s.icono ? 'bg-amber-400 text-green-950' : 'bg-green-800'}`}
+            className={`rounded-full border px-3 py-1 text-sm ${icono === s.icono ? 'border-ink bg-ink font-semibold text-card' : 'border-line text-ink-soft'}`}
           >
             {s.icono} {s.nombre}
           </button>
         ))}
       </div>
 
-      <label htmlFor="tarea-nombre" className="block">Tarea</label>
+      <label htmlFor="tarea-nombre" className={etiquetaCampo}>Tarea</label>
       <input
         id="tarea-nombre"
         required
@@ -105,7 +107,7 @@ function FormTarea({
         className={campo}
       />
 
-      <label htmlFor="tarea-hora" className="block">Hora (opcional)</label>
+      <label htmlFor="tarea-hora" className={etiquetaCampo}>Hora (opcional)</label>
       <input
         id="tarea-hora"
         type="time"
@@ -115,7 +117,7 @@ function FormTarea({
       />
 
       <fieldset className="space-y-2">
-        <legend>Días</legend>
+        <legend className={etiquetaCampo}>Días</legend>
         <div className="flex gap-1">
           {DIAS.map(d => (
             <button
@@ -124,7 +126,7 @@ function FormTarea({
               aria-pressed={dias.includes(d.valor)}
               aria-label={d.largo}
               onClick={() => alternarDia(d.valor)}
-              className={`flex-1 rounded-lg py-2 text-sm font-semibold ${dias.includes(d.valor) ? 'bg-amber-400 text-green-950' : 'bg-green-800'}`}
+              className={`flex-1 rounded-lg border py-2 text-sm font-semibold ${dias.includes(d.valor) ? 'border-moss bg-moss text-moss-ink' : 'border-line-strong text-ink-faint'}`}
             >
               {d.corto}
             </button>
@@ -132,7 +134,7 @@ function FormTarea({
         </div>
       </fieldset>
 
-      <label htmlFor="tarea-responsable" className="block">¿A quién le toca normalmente?</label>
+      <label htmlFor="tarea-responsable" className={etiquetaCampo}>¿A quién le toca normalmente?</label>
       <select
         id="tarea-responsable"
         value={responsable}
@@ -213,18 +215,18 @@ function TareasDeMascota({
   const ordenadas = [...tareas].sort((a, b) => Number(b.active) - Number(a.active))
 
   return (
-    <section className={tarjeta}>
-      <h2 className="text-lg font-semibold">Tareas</h2>
+    <section className="space-y-2.5">
+      <h2 className={etiquetaSeccion}>Qué necesita cada día</h2>
 
       {tareas.length === 0 && editando !== 'nueva' && (
-        <p className="text-sm text-white/80">
+        <p className="rounded-[14px] border-[1.5px] border-dashed border-line-strong px-4 py-5 text-center text-sm text-ink-soft">
           {esAdmin
             ? `Todavía no hay tareas para ${nombreMascota}. Agrega la primera: paseo, comida, remedio...`
             : `Todavía no hay tareas para ${nombreMascota}. Un admin del hogar puede definirlas.`}
         </p>
       )}
 
-      <ul className="space-y-3" aria-label="Tareas">
+      <ul className="space-y-2" aria-label="Tareas">
         {ordenadas.map(t =>
           editando === t.id ? (
             <li key={t.id}>
@@ -238,15 +240,15 @@ function TareasDeMascota({
           ) : (
             <li
               key={t.id}
-              className={`flex gap-3 rounded-lg bg-green-950/40 p-3 ${t.active ? '' : 'opacity-60'}`}
+              className={`${fila} items-start ${t.active ? '' : 'opacity-60'}`}
             >
-              <span className="text-2xl" aria-hidden>{t.icon ?? '🐾'}</span>
+              <span className={glifo} aria-hidden>{t.icon ?? '🐾'}</span>
               <div className="min-w-0 flex-1 space-y-1">
-                <p className="font-semibold">
+                <p className="font-semibold leading-snug">
                   {t.name}
                   {!t.active && <span className="ml-2 text-xs font-normal">(pausada)</span>}
                 </p>
-                <p className="text-sm text-white/70">
+                <p className="text-[12.5px] text-ink-soft">
                   {hora(t.time_of_day)} · {resumenDias(t.weekdays)} · {nombreDe(t.default_assignee)}
                 </p>
                 {esAdmin && (
@@ -273,7 +275,7 @@ function TareasDeMascota({
             onCancelar={() => setEditando(null)}
           />
         ) : (
-          <button onClick={() => setEditando('nueva')} className={boton}>
+          <button onClick={() => setEditando('nueva')} className={botonAgregar}>
             Agregar tarea
           </button>
         ))}

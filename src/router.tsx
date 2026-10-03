@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router'
+import { createBrowserRouter, Navigate } from 'react-router'
 import RequiereSesion from './auth/RequiereSesion'
 import HogarPagina from './pages/HogarPagina'
 import Ingresar from './pages/Ingresar'
@@ -13,7 +13,10 @@ export const router = createBrowserRouter([
     element: <RequiereSesion />,
     children: [
       { path: '/', element: <Inicio /> },
-      { path: '/hogar', element: <HogarPagina /> },
+      { path: '/manada', element: <HogarPagina /> },
+      // Ruta anterior de la pantalla del hogar, por si alguien la tiene guardada.
+      { path: '/hogar', element: <Navigate to="/manada" replace /> },
+      { path: '/mascotas', element: <MascotaPagina /> },
       { path: '/mascotas/:id', element: <MascotaPagina /> },
       { path: '/unirse/:codigo', element: <Unirse /> },
     ],
