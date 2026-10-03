@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router'
 import { supabase } from '../lib/supabase'
 import Pantalla from '../components/Pantalla'
-import { alerta, boton, campo, tarjeta } from '../components/estilos'
+import { alerta, boton, campo, etiquetaCampo, tarjeta } from '../components/estilos'
 import { useMiHogar } from '../hogar/useMiHogar'
 
 // Destino del link de invitación. Si la persona no tenía sesión, llega aquí después de ingresar.
@@ -71,7 +71,7 @@ function Unirse() {
   return (
     <Pantalla titulo={`Te invitaron a ${invitado.nombre}`}>
       <form onSubmit={unirme} className={tarjeta}>
-        <label htmlFor="mi-nombre" className="block">Tu nombre, como te verán los demás</label>
+        <label htmlFor="mi-nombre" className={etiquetaCampo}>Tu nombre, como te verán los demás</label>
         <input
           id="mi-nombre"
           required

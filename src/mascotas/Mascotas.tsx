@@ -1,7 +1,9 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import { supabase } from '../lib/supabase'
-import { alerta, boton, botonSecundario, campo, tarjeta } from '../components/estilos'
+import {
+  alerta, boton, botonAgregar, botonSecundario, campo, etiquetaCampo, etiquetaSeccion, glifo,
+} from '../components/estilos'
 import { ESPECIES, especie } from './especies'
 
 type Mascota = {
@@ -45,8 +47,8 @@ function FormMascota({
   }
 
   return (
-    <form onSubmit={enviar} className="space-y-3 rounded-lg bg-green-950/40 p-3">
-      <label htmlFor="mascota-nombre" className="block">Nombre</label>
+    <form onSubmit={enviar} className="space-y-3 rounded-[14px] border border-line bg-card p-4">
+      <label htmlFor="mascota-nombre" className={etiquetaCampo}>Nombre</label>
       <input
         id="mascota-nombre"
         required
@@ -55,7 +57,7 @@ function FormMascota({
         onChange={e => setNombre(e.target.value)}
         className={campo}
       />
-      <label htmlFor="mascota-especie" className="block">Especie</label>
+      <label htmlFor="mascota-especie" className={etiquetaCampo}>Especie</label>
       <select
         id="mascota-especie"
         value={tipo}
@@ -66,7 +68,7 @@ function FormMascota({
           <option key={e.valor} value={e.valor}>{e.emoji} {e.nombre}</option>
         ))}
       </select>
-      <label htmlFor="mascota-notas" className="block">Notas (opcional)</label>
+      <label htmlFor="mascota-notas" className={etiquetaCampo}>Notas (opcional)</label>
       <textarea
         id="mascota-notas"
         rows={3}
@@ -135,18 +137,18 @@ function Mascotas({ circleId, esAdmin }: { circleId: string; esAdmin: boolean })
   }
 
   return (
-    <section className={tarjeta}>
-      <h2 className="text-lg font-semibold">Mascotas</h2>
+    <section className="space-y-2.5">
+      <h2 className={etiquetaSeccion}>Mascotas</h2>
 
       {activas.length === 0 && editando !== 'nueva' && (
-        <p className="text-sm text-white/80">
+        <p className="rounded-[14px] border-[1.5px] border-dashed border-line-strong px-4 py-5 text-center text-sm text-ink-soft">
           {esAdmin
             ? 'Todavía no hay mascotas. Agrega la primera.'
             : 'Todavía no hay mascotas. Un admin del hogar puede agregarlas.'}
         </p>
       )}
 
-      <ul className="space-y-3" aria-label="Mascotas">
+      <ul className="space-y-2" aria-label="Mascotas">
         {activas.map(m =>
           editando === m.id ? (
             <li key={m.id}>
@@ -157,15 +159,15 @@ function Mascotas({ circleId, esAdmin }: { circleId: string; esAdmin: boolean })
               />
             </li>
           ) : (
-            <li key={m.id} className="flex gap-3 rounded-lg bg-green-950/40 p-3">
-              <span className="text-3xl" aria-hidden>{especie(m.species).emoji}</span>
+            <li key={m.id} className="flex gap-3 rounded-[14px] border border-line bg-card p-3.5">
+              <span className={`${glifo} size-12 rounded-full text-2xl`} aria-hidden>{especie(m.species).emoji}</span>
               <div className="min-w-0 flex-1 space-y-1">
-                <Link to={`/mascotas/${m.id}`} className="font-semibold underline">
+                <Link to={`/mascotas/${m.id}`} className="font-display text-[17px] font-semibold">
                   {m.name}
                 </Link>
-                <p className="text-sm text-white/70">{especie(m.species).nombre}</p>
-                {m.notes && <p className="whitespace-pre-line text-sm">{m.notes}</p>}
-                <div className="flex gap-2 pt-1">
+                <p className="text-[12.5px] text-ink-soft">{especie(m.species).nombre}</p>
+                {m.notes && <p className="text-sm whitespace-pre-line">{m.notes}</p>}
+                <div className="flex flex-wrap gap-2 pt-1">
                   <Link to={`/mascotas/${m.id}`} className={botonSecundario}>
                     Tareas
                   </Link>
@@ -190,20 +192,20 @@ function Mascotas({ circleId, esAdmin }: { circleId: string; esAdmin: boolean })
         (editando === 'nueva' ? (
           <FormMascota onGuardar={datos => guardar(datos)} onCancelar={() => setEditando(null)} />
         ) : (
-          <button onClick={() => setEditando('nueva')} className={boton}>
+          <button onClick={() => setEditando('nueva')} className={botonAgregar}>
             Agregar mascota
           </button>
         ))}
 
       {archivadas.length > 0 && (
         <div className="space-y-2">
-          <button onClick={() => setVerArchivadas(v => !v)} className="text-sm underline">
+          <button onClick={() => setVerArchivadas(v => !v)} className="text-sm text-ink-soft underline">
             {verArchivadas ? 'Ocultar archivadas' : `Ver archivadas (${archivadas.length})`}
           </button>
           {verArchivadas && (
             <ul className="space-y-2" aria-label="Mascotas archivadas">
               {archivadas.map(m => (
-                <li key={m.id} className="flex items-center justify-between text-white/70">
+                <li key={m.id} className="flex items-center justify-between text-ink-soft">
                   <span>
                     {especie(m.species).emoji} {m.name}
                   </span>

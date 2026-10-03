@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase'
 import { useSesion } from '../auth/sesion'
 import { leerCorreo, recordarCorreo } from '../auth/correoRecordado'
 import { rutaDeVuelta } from '../auth/volver'
-import { alerta, boton, campo } from '../components/estilos'
+import { alerta, boton, campo, etiquetaCampo } from '../components/estilos'
 
 function traducirError(error: AuthError) {
   switch (error.code) {
@@ -69,17 +69,20 @@ function Ingresar() {
   }
 
   return (
-    <div className="min-h-screen bg-green-900 text-white grid place-items-center px-4">
+    <div className="grid min-h-dvh place-items-center bg-sage px-6 py-9 text-ink">
       <div className="w-full max-w-sm space-y-6">
-        <h1 className="text-3xl font-bold text-center">Manada 🐾</h1>
-        <p className="text-center text-white/80">
+        <div className="space-y-3 text-center">
+          <img src="/favicon.svg" alt="" className="mx-auto size-[74px]" />
+          <h1 className="text-[29px] leading-tight font-extrabold">Manada</h1>
+        </div>
+        <p className="text-center text-[14.5px] leading-normal text-ink-soft">
           Te enviaremos un código a tu correo. Solo lo pedimos la primera vez en cada dispositivo;
           después entras directo.
         </p>
 
         {!enviado ? (
           <form onSubmit={pedirAcceso} className="space-y-3">
-            <label htmlFor="correo" className="block">Tu correo</label>
+            <label htmlFor="correo" className={etiquetaCampo}>Tu correo</label>
             <input
               id="correo"
               type="email"
@@ -98,7 +101,7 @@ function Ingresar() {
             <p>
               Te enviamos un correo a <strong>{correo.trim()}</strong>. Escribe aquí el código:
             </p>
-            <p className="text-sm text-white/80">
+            <p className="text-[12.5px] leading-normal text-ink-faint">
               También puedes tocar el botón del correo, pero si tienes Manada instalada en el celular,
               usa el código: el botón abre el navegador y la sesión quedaría allá.
             </p>
@@ -111,12 +114,12 @@ function Ingresar() {
               pattern="[0-9]{6,10}"
               value={codigo}
               onChange={e => setCodigo(e.target.value)}
-              className={campo + ' text-center text-2xl tracking-widest'}
+              className={`${campo} text-center font-display text-[26px] font-bold tracking-[.3em]`}
             />
             <button type="submit" disabled={ocupado} className={boton}>
               {ocupado ? 'Verificando...' : 'Entrar'}
             </button>
-            <button type="button" onClick={usarOtroCorreo} className="w-full underline">
+            <button type="button" onClick={usarOtroCorreo} className="w-full pt-2 text-[13.5px] text-ink-soft underline underline-offset-[3px]">
               Usar otro correo
             </button>
           </form>

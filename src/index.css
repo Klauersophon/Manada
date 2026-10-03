@@ -1,8 +1,84 @@
 @import "tailwindcss";
+@import "@fontsource-variable/bricolage-grotesque";
+@import "@fontsource-variable/instrument-sans";
 
-/* Instalada en el iPhone, la app se dibuja bajo la barra de estado y el indicador de inicio
-   (viewport-fit=cover con black-translucent). Estos márgenes evitan que el contenido quede tapado. */
+/* Paleta de la maqueta de Manada. Los colores viven en variables para que el modo oscuro solo
+   tenga que cambiarlas; Tailwind las expone como utilidades (bg-sage, text-ink, border-line...). */
+:root {
+  --sage: #dde3d5;
+  --sage-deep: #cbd3c1;
+  --card: #fcfcf9;
+  --ink: #1c2620;
+  --ink-soft: #5a6a5f;
+  --ink-faint: #8c9a90;
+  --moss: #3f6b45;
+  --moss-deep: #2e5033;
+  --moss-ink: #f2f7f0;
+  --sun: #e8a427;
+  --sun-deep: #b87d12;
+  --clay: #c1553f;
+  --line: rgb(28 38 32 / 0.14);
+  --line-strong: rgb(28 38 32 / 0.26);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sage: #151c17;
+    --sage-deep: #1e2720;
+    --card: #20291f;
+    --ink: #e8eee4;
+    --ink-soft: #a3b2a6;
+    --ink-faint: #74836f;
+    --moss: #6fa772;
+    --moss-deep: #8fc291;
+    --moss-ink: #111811;
+    --sun-deep: #f0bc5b;
+    --clay: #e07c63;
+    --line: rgb(232 238 228 / 0.16);
+    --line-strong: rgb(232 238 228 / 0.3);
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-sage: var(--sage);
+  --color-sage-deep: var(--sage-deep);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-moss: var(--moss);
+  --color-moss-deep: var(--moss-deep);
+  --color-moss-ink: var(--moss-ink);
+  --color-sun: var(--sun);
+  --color-sun-deep: var(--sun-deep);
+  --color-clay: var(--clay);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --font-sans: "Instrument Sans Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Bricolage Grotesque Variable", "Instrument Sans Variable", -apple-system, sans-serif;
+}
+
 body {
+  background: var(--sage);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  /* Instalada en el iPhone, la app se dibuja bajo la barra de estado y el indicador de inicio
+     (viewport-fit=cover). Estos márgenes evitan que el contenido quede tapado. */
   padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+:focus-visible {
+  outline: 2.5px solid var(--sun-deep);
+  outline-offset: 2px;
+  border-radius: 4px;
 }

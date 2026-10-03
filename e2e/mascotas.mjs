@@ -22,7 +22,7 @@ try {
   await ana.type('#mi-nombre', 'Ana')
   await clicTexto(ana, 'Crear hogar')
   await ana.waitForSelector('nav')
-  await irA(ana, 'Hogar')
+  await irA(ana, 'Manada')
   await esperarTexto(ana, 'Agrega la primera')
   ok('un hogar nuevo invita a agregar la primera mascota', true)
 
@@ -77,7 +77,7 @@ try {
   await beto.type('#mi-nombre', 'Beto')
   await clicTexto(beto, 'Unirme')
   await beto.waitForSelector('nav')
-  await irA(beto, 'Hogar')
+  await irA(beto, 'Manada')
   await esperarTexto(beto, 'Lunita')
   ok('un miembro ve las mascotas activas', JSON.stringify(await nombresActivas(beto)) === '["Lunita"]')
   const tb = await texto(beto)
