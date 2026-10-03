@@ -93,7 +93,7 @@ function MiHogar({ hogar }: { hogar: Hogar }) {
   }
 
   return (
-    <Pantalla titulo={hogar.nombre}>
+    <Pantalla titulo={hogar.nombre} navegacion>
       <Mascotas circleId={id} esAdmin={esAdmin} />
 
       <section className={tarjeta}>

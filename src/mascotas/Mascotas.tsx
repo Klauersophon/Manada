@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { Link } from 'react-router'
 import { supabase } from '../lib/supabase'
 import { alerta, boton, botonSecundario, campo, tarjeta } from '../components/estilos'
 import { ESPECIES, especie } from './especies'
@@ -159,7 +160,9 @@ function Mascotas({ circleId, esAdmin }: { circleId: string; esAdmin: boolean })
             <li key={m.id} className="flex gap-3 rounded-lg bg-green-950/40 p-3">
               <span className="text-3xl" aria-hidden>{especie(m.species).emoji}</span>
               <div className="min-w-0 flex-1 space-y-1">
-                <p className="font-semibold">{m.name}</p>
+                <Link to={`/mascotas/${m.id}`} className="font-semibold underline">
+                  {m.name}
+                </Link>
                 <p className="text-sm text-white/70">{especie(m.species).nombre}</p>
                 {m.notes && <p className="whitespace-pre-line text-sm">{m.notes}</p>}
                 {esAdmin && (
