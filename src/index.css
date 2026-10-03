@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+/* Instalada en el iPhone, la app se dibuja bajo la barra de estado y el indicador de inicio
+   (viewport-fit=cover con black-translucent). Estos márgenes evitan que el contenido quede tapado. */
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
