@@ -187,6 +187,9 @@ export type Database = {
       pets: {
         Row: {
           archived_at: string | null
+          birth_date: string | null
+          birth_year: number | null
+          breed: string | null
           circle_id: string
           created_at: string | null
           id: string
@@ -194,9 +197,14 @@ export type Database = {
           notes: string | null
           photo_url: string | null
           species: string
+          vet_name: string | null
+          vet_phone: string | null
         }
         Insert: {
           archived_at?: string | null
+          birth_date?: string | null
+          birth_year?: number | null
+          breed?: string | null
           circle_id: string
           created_at?: string | null
           id?: string
@@ -204,9 +212,14 @@ export type Database = {
           notes?: string | null
           photo_url?: string | null
           species: string
+          vet_name?: string | null
+          vet_phone?: string | null
         }
         Update: {
           archived_at?: string | null
+          birth_date?: string | null
+          birth_year?: number | null
+          breed?: string | null
           circle_id?: string
           created_at?: string | null
           id?: string
@@ -214,6 +227,8 @@ export type Database = {
           notes?: string | null
           photo_url?: string | null
           species?: string
+          vet_name?: string | null
+          vet_phone?: string | null
         }
         Relationships: [
           {
