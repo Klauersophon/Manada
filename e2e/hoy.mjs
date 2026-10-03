@@ -69,7 +69,12 @@ try {
   await ana.type('#mascota-nombre', 'Luna')
   await clicTexto(ana, 'Guardar')
   await ana.waitForSelector('ul[aria-label="Mascotas"] a')
-  await ana.click('ul[aria-label="Mascotas"] a')
+  ok('la tarjeta de la mascota tiene un botón de tareas',
+    await ana.$$eval('ul[aria-label="Mascotas"] a', as => as.some(a => a.innerText === 'Tareas')))
+  await irA(ana, 'Hoy')
+  await esperarTexto(ana, 'Definir tareas de Luna')
+  ok('"Hoy" sin tareas lleva directo a definirlas por mascota', true)
+  await ana.evaluate(() => [...document.querySelectorAll('a')].find(a => a.innerText.includes('Definir tareas de Luna')).click())
   await esperarTexto(ana, 'Todavía no hay tareas para Luna')
   ok('cada mascota tiene su página de tareas', /^\/mascotas\/[0-9a-f-]{36}$/.test(ruta(ana)), ruta(ana))
   const paginaLuna = ana.url()
