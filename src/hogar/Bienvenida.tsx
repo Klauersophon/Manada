@@ -70,6 +70,8 @@ function Bienvenida({ onListo }: { onListo: () => void }) {
         <input
           id="codigo-invitacion"
           required
+          autoCapitalize="characters"
+          autoComplete="off"
           value={codigo}
           onChange={e => setCodigo(e.target.value)}
           className={campo}

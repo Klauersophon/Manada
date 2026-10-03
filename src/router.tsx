@@ -10,6 +10,8 @@ import Unirse from './pages/Unirse'
 
 export const router = createBrowserRouter([
   { path: '/ingresar', element: <Ingresar /> },
+  // Pública: quien no tiene sesión puede entrar como invitado desde aquí.
+  { path: '/unirse/:codigo', element: <Unirse /> },
   {
     element: <RequiereSesion />,
     children: [
@@ -20,7 +22,6 @@ export const router = createBrowserRouter([
       { path: '/hogar', element: <Navigate to="/manada" replace /> },
       { path: '/mascotas', element: <MascotaPagina /> },
       { path: '/mascotas/:id', element: <MascotaPagina /> },
-      { path: '/unirse/:codigo', element: <Unirse /> },
     ],
   },
   { path: '*', element: <NoEncontrado /> },
