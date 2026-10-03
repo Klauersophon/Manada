@@ -7,6 +7,7 @@ import { alerta, etiquetaSeccion, fila } from '../components/estilos'
 import { fechaLocal } from '../hoy/calendario'
 import Mascotas from '../mascotas/Mascotas'
 import { lunesDe } from '../semana/reglas'
+import GuardarCuenta from './GuardarCuenta'
 import HojaRol from './HojaRol'
 import type { Hogar } from './useMiHogar'
 
@@ -53,7 +54,8 @@ async function buscarDatos(circleId: string, esAdmin: boolean) {
 // puede ver y hacer en toda la app.
 function MiHogar({ hogar, onRolPropio }: { hogar: Hogar; onRolPropio: () => void }) {
   const { id, esAdmin } = hogar
-  const yo = useSesion().sesion?.user.id
+  const { sesion } = useSesion()
+  const yo = sesion?.user.id
   const [miembros, setMiembros] = useState<Miembro[]>([])
   const [invitaciones, setInvitaciones] = useState<Invitacion[]>([])
   const [hechasPor, setHechasPor] = useState(new Map<string, number>())
@@ -188,7 +190,7 @@ function MiHogar({ hogar, onRolPropio }: { hogar: Hogar; onRolPropio: () => void
         <section className="space-y-3 rounded-[14px] bg-ink p-[17px] text-card">
           <h2 className="text-[17px] font-bold">Invitar a tu familia</h2>
           <p className="text-[13.5px] opacity-80">
-            El link sirve para varias personas durante 7 días. Puedes revocarlo cuando quieras.
+            El link o el código sirven para varias personas durante 7 días. Puedes revocarlos cuando quieras.
           </p>
           <button
             onClick={crearInvitacion}
@@ -200,7 +202,8 @@ function MiHogar({ hogar, onRolPropio }: { hogar: Hogar; onRolPropio: () => void
           <ul className="space-y-2.5" aria-label="Invitaciones activas">
             {invitaciones.map(inv => (
               <li key={inv.code} className="space-y-2 rounded-[10px] bg-card/15 p-3">
-                <p className="font-mono text-sm break-all" data-link>{linkDe(inv.code)}</p>
+                <p className="font-display text-[26px] font-bold tracking-[.18em]" data-codigo>{inv.code}</p>
+                <p className="font-mono text-[12px] break-all opacity-75" data-link>{linkDe(inv.code)}</p>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs opacity-75">Vence el {fecha(inv.expires_at)}</span>
                   <div className="flex gap-2">
@@ -224,6 +227,8 @@ function MiHogar({ hogar, onRolPropio }: { hogar: Hogar; onRolPropio: () => void
           {aviso && <p className="text-sm">{aviso}</p>}
         </section>
       )}
+
+      {sesion?.user.is_anonymous && <GuardarCuenta />}
 
       {error && <p role="alert" className={alerta}>{error}</p>}
 

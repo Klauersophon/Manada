@@ -22,7 +22,7 @@ try {
   await clicTexto(ana, 'Crear link de invitación')
   await ana.waitForSelector('[data-link]')
   const link = await ana.$eval('[data-link]', p => p.innerText)
-  ok('el link de invitación usa el código de la base', /\/unirse\/[A-Za-z0-9_-]{12}$/.test(link), link)
+  ok('el link usa un código de 8 caracteres de la base', /\/unirse\/[A-HJKMNP-TW-Z2-9]{8}$/.test(link), link)
   ok('la invitación muestra su vencimiento', (await texto(ana)).includes('Vence el'))
   const codigoInv = link.split('/unirse/')[1]
 
@@ -60,6 +60,20 @@ try {
   await clicTexto(caro, 'Continuar')
   await esperarTexto(caro, 'Te invitaron a Casa Test')
   ok('pegar el link completo en la bienvenida lleva a la invitación', true)
+
+  // Dani abre el link sin cuenta y entra como invitado, sin correo
+  const dani = await nuevaPagina()
+  await dani.goto(link)
+  await esperarTexto(dani, 'Entrar como invitado')
+  ok('sin sesión, el link ofrece entrar como invitado sin pasar por ingresar', ruta(dani) === '/unirse/' + codigoInv, ruta(dani))
+  await clicTexto(dani, 'Entrar como invitado')
+  await esperarTexto(dani, 'Te invitaron a Casa Test')
+  await dani.type('#mi-nombre', 'Dani')
+  await clicTexto(dani, 'Unirme')
+  await dani.waitForSelector('nav')
+  await irA(dani, 'Manada')
+  await esperarTexto(dani, 'Guarda tu cuenta')
+  ok('el invitado queda en el hogar y se le ofrece guardar su cuenta', true)
 
   // Ana revoca y la invitación deja de servir
   await clicTexto(ana, 'Revocar')

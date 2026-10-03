@@ -4,9 +4,12 @@ import { supabase } from '../lib/supabase'
 import Pantalla from '../components/Pantalla'
 import { alerta, boton, campo, etiquetaCampo, tarjeta } from '../components/estilos'
 import { useMiHogar } from '../hogar/useMiHogar'
+import { useSesion } from '../auth/sesion'
 
-// Destino del link de invitación. Si la persona no tenía sesión, llega aquí después de ingresar.
+// Destino del link de invitación. Sin sesión, ofrece entrar como invitado (ingreso anónimo, sin
+// correo) o con correo; el correo se puede agregar después desde Manada.
 function Unirse() {
+  const { sesion, cargando: cargandoSesion } = useSesion()
   const { codigo = '' } = useParams()
   const navigate = useNavigate()
   const { hogar: hogarActual, cargando } = useMiHogar()
@@ -19,6 +22,7 @@ function Unirse() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!sesion) return
     let vigente = true
     supabase.rpc('preview_invite', { invite_code: codigo }).then(({ data, error }) => {
       if (!vigente) return
@@ -28,7 +32,7 @@ function Unirse() {
     return () => {
       vigente = false
     }
-  }, [codigo])
+  }, [codigo, sesion])
 
   async function unirme(e: FormEvent) {
     e.preventDefault()
@@ -42,6 +46,39 @@ function Unirse() {
     if (error) setError('No pudimos unirte: ' + error.message)
     else navigate('/', { replace: true })
   }
+
+  async function entrarComoInvitado() {
+    setOcupado(true)
+    setError(null)
+    const { error } = await supabase.auth.signInAnonymously()
+    setOcupado(false)
+    if (error) setError('No pudimos entrar como invitado: ' + error.message)
+  }
+
+  if (cargandoSesion) return <Pantalla><p>Cargando...</p></Pantalla>
+
+  if (!sesion)
+    return (
+      <Pantalla titulo="Te invitaron a un hogar en Manada">
+        <p>Puedes entrar ahora mismo como invitado, sin correo, o ingresar con tu correo.</p>
+        <div className="space-y-3">
+          <button onClick={entrarComoInvitado} disabled={ocupado} className={boton}>
+            {ocupado ? 'Entrando...' : 'Entrar como invitado'}
+          </button>
+          <Link
+            to={`/ingresar?volver=${encodeURIComponent('/unirse/' + codigo)}`}
+            className="block w-full rounded-xl border-[1.5px] border-line-strong px-4 py-3 text-center font-semibold text-ink"
+          >
+            Ingresar con mi correo
+          </Link>
+        </div>
+        <p className="text-[12.5px] leading-normal text-ink-faint">
+          Como invitado, tu acceso vive solo en este dispositivo. Guarda tu cuenta con un correo
+          desde Manada para no perderlo.
+        </p>
+        {error && <p role="alert" className={alerta}>{error}</p>}
+      </Pantalla>
+    )
 
   if (cargando || invitado === undefined) return <Pantalla><p>Cargando...</p></Pantalla>
 

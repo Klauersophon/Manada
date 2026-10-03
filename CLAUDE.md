@@ -6,7 +6,7 @@ toca y quién ya lo hizo. Proyecto personal de Oscar (GitHub: Klauersophon).
 Este archivo es el contexto compartido entre computadoras y sesiones. Si algo cambia (una
 decisión, el estado del plan, una trampa nueva), se actualiza aquí en el mismo PR.
 
-## Estado: publicada y adoptando la maqueta de diseño (paso 5 de 6)
+## Estado: publicada y adoptando la maqueta de diseño (paso 6 de 6)
 
 - **Producción:** https://manada-iota.vercel.app. Es la única URL pública; las previews de Vercel
   y el alias `manada-manada-kv.vercel.app` piden login de Vercel.
@@ -22,10 +22,10 @@ decisión, el estado del plan, una trampa nueva), se actualiza aquí en el mismo
 2. "Hoy" completo: hoja "Quién se encarga", aviso con Deshacer, "Hoy en la manada". Hecho (PR #12).
 3. Semana: cuadrícula por mascota, historial y plan de días futuros. Hecho (PR #13).
 4. Manada y ficha: roles sin dejar el hogar sin admin, raza, edad y veterinario. Hecho (PR #14).
-5. **Siguiente:** invitados sin cuenta (ingreso anónimo de Supabase, con correo opcional después)
-   y código de invitación de 8 caracteres sin letras confusas. Hay que activar "Allow anonymous
-   sign-ins" en Supabase y guiar a Oscar para hacerlo.
-6. Tiempo real: que "Hoy" se actualice sola con Supabase Realtime.
+5. Invitados sin cuenta (ingreso anónimo, correo opcional después desde Manada) y código de
+   invitación de 8 caracteres sin letras confusas. Hecho (PR pendiente). Requiere "Allow anonymous
+   sign-ins" activo en Supabase (dashboard → Authentication → Sign In / Providers).
+6. **Siguiente:** Tiempo real: que "Hoy" se actualice sola con Supabase Realtime.
 
 ## Comandos
 
@@ -71,6 +71,7 @@ npm run db:types   # regenera src/lib/database.types.ts desde el proyecto vincul
 ## Decisiones de producto
 
 - **Un hogar visible por persona.** Unirse a un segundo se bloquea con un aviso.
+- **Invitados:** `/unirse/:codigo` es pública y ofrece "Entrar como invitado" (`signInAnonymously`). El invitado puede guardar su cuenta con un correo desde Manada (`updateUser` + código `email_change`). Los códigos nuevos son de 8 caracteres (`generar_codigo_de_invitacion`); los de 12 siguen valiendo hasta vencer.
 - **Login con enlace mágico más código de 6 dígitos en el correo.** El código es para la app
   instalada en iPhone, porque el enlace abre Safari y la sesión no llega a la app. El SMTP es
   Gmail con contraseña de aplicación, configurado en Supabase. Cada navegador o app instalada
