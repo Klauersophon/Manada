@@ -3,6 +3,7 @@ import { Navigate, useSearchParams } from 'react-router'
 import type { AuthError } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import { useSesion } from '../auth/sesion'
+import { leerCorreo, recordarCorreo } from '../auth/correoRecordado'
 import { rutaDeVuelta } from '../auth/volver'
 import { alerta, boton, campo } from '../components/estilos'
 
@@ -18,13 +19,14 @@ function traducirError(error: AuthError) {
   }
 }
 
-// El correo trae un enlace y un código. El código existe para la app instalada en iPhone, donde el
-// enlace abre Safari y la sesión no llega a la app.
+// El correo trae un enlace y un código. El código existe para la app instalada en el celular, donde
+// el enlace abre el navegador y la sesión no llega a la app. Cada navegador o app instalada guarda
+// su propia sesión, así que el código se pide una vez en cada uno.
 function Ingresar() {
   const { sesion } = useSesion()
   const [params] = useSearchParams()
   const volver = rutaDeVuelta(params)
-  const [correo, setCorreo] = useState('')
+  const [correo, setCorreo] = useState(leerCorreo)
   const [codigo, setCodigo] = useState('')
   const [enviado, setEnviado] = useState(false)
   const [ocupado, setOcupado] = useState(false)
@@ -42,8 +44,9 @@ function Ingresar() {
       options: { emailRedirectTo: window.location.origin + volver },
     })
     setOcupado(false)
-    if (error) setError(traducirError(error))
-    else setEnviado(true)
+    if (error) return setError(traducirError(error))
+    recordarCorreo(correo.trim())
+    setEnviado(true)
   }
 
   async function verificarCodigo(e: FormEvent) {
@@ -69,6 +72,10 @@ function Ingresar() {
     <div className="min-h-screen bg-green-900 text-white grid place-items-center px-4">
       <div className="w-full max-w-sm space-y-6">
         <h1 className="text-3xl font-bold text-center">Manada 🐾</h1>
+        <p className="text-center text-white/80">
+          Te enviaremos un código a tu correo. Solo lo pedimos la primera vez en cada dispositivo;
+          después entras directo.
+        </p>
 
         {!enviado ? (
           <form onSubmit={pedirAcceso} className="space-y-3">
@@ -89,8 +96,11 @@ function Ingresar() {
         ) : (
           <form onSubmit={verificarCodigo} className="space-y-3">
             <p>
-              Te enviamos un correo a <strong>{correo.trim()}</strong>. Toca el enlace, o escribe aquí
-              el código:
+              Te enviamos un correo a <strong>{correo.trim()}</strong>. Escribe aquí el código:
+            </p>
+            <p className="text-sm text-white/80">
+              También puedes tocar el botón del correo, pero si tienes Manada instalada en el celular,
+              usa el código: el botón abre el navegador y la sesión quedaría allá.
             </p>
             <input
               id="codigo"

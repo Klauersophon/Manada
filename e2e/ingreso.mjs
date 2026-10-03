@@ -20,6 +20,8 @@ try {
   await ana.evaluate(() => [...document.querySelectorAll('button')].find(b => b.innerText.includes('Cerrar')).click())
   await ana.waitForSelector('#correo')
   ok('cerrar sesión vuelve a /ingresar', ruta(ana) === '/ingresar')
+  ok('el dispositivo recuerda el último correo usado',
+    (await ana.$eval('#correo', i => i.value)) === `ana+${corrida}@test.cl`)
 
   // Con el código, en otro navegador
   const beto = await nuevaPagina()
