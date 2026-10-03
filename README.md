@@ -3,9 +3,9 @@
 App para que los miembros de un grupo familiar coordinen el cuidado cotidiano de sus mascotas:
 quién paseó al perro, quién dio la comida, qué falta hacer hoy.
 
-**Estado actual:** se puede ingresar, crear el hogar e invitar a la familia, registrar mascotas
-con sus tareas y marcar en "Hoy" lo que ya se hizo. Falta ver los cambios de los demás en tiempo
-real, el historial por mascota y publicar la app para instalarla en el celular.
+**Estado actual:** publicada como app instalable. Se puede crear el hogar e invitar a la
+familia, registrar mascotas con sus tareas, repartir y marcar en "Hoy" lo del día, y ver y
+planificar la semana de cada mascota.
 
 ## Stack: React + Vite en el front, Supabase como backend
 
@@ -69,7 +69,7 @@ marcar lo del día. Los correos se leen desde el buzón de prueba local (Mailpit
 ```sh
 npx supabase start
 npm run e2e              # todas
-npm run e2e -- hoy       # solo una: ingreso, hogar, mascotas u hoy
+npm run e2e -- hoy       # solo una: ingreso, hogar, mascotas, hoy o semana
 ```
 
 Nunca tocan el proyecto real: el script se niega a correr si Supabase no es local, y cualquier
@@ -79,6 +79,9 @@ está en la ruta por defecto, se indica con la variable `CHROME_PATH`.
 
 ## Pendiente para la primera versión
 
+El diseño sigue la maqueta de Manada, y se está adoptando por pasos. Faltan:
+
+- Manada y ficha: cambiar roles sin dejar el hogar sin admin, y raza, edad y veterinario de la
+  mascota.
+- Unirse sin crear cuenta, con un código corto.
 - Ver en tiempo real lo que marcan los demás (Supabase Realtime).
-- Historial de cuidados por mascota.
-- Publicar la app como PWA instalable y agregar su URL en las Redirect URLs de Supabase.

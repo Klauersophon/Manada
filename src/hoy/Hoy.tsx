@@ -346,7 +346,8 @@ function Hoy({ hogar }: { hogar: Hogar }) {
 
       {enHoja && yo && (
         <HojaResponsable
-          tarea={{ name: enHoja.name, hora: hora(enHoja.time_of_day) }}
+          titulo={enHoja.name}
+          cuando={`Solo por hoy · ${hora(enHoja.time_of_day)}`}
           miembros={miembros}
           yo={yo}
           esAdmin={hogar.esAdmin}
