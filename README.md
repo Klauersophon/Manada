@@ -47,6 +47,7 @@ del repo: hay que copiarla a mano en Authentication → Email Templates, en "Mag
 | `npm run build`   | Chequeo de tipos y build de producción    |
 | `npm run lint`    | ESLint sobre todo el proyecto             |
 | `npm test`        | Tests de Vitest (por ahora, el cálculo de qué toca cada día) |
+| `npm run e2e`     | Pruebas de punta a punta en Chrome contra el Supabase local |
 | `npm run preview` | Sirve el build de producción en local     |
 | `npm run db:types` | Regenera los tipos de TypeScript desde el esquema de Supabase |
 | `npm run db:test`  | Corre los tests de seguridad de la base (requiere `npx supabase start`) |
@@ -59,8 +60,25 @@ El esquema vive en `supabase/migrations/`. Para cambiarlo, crear una migración 
 
 Cambiar tablas o policies desde el dashboard deja el repo desactualizado.
 
-## Pendiente para tener una primera versión usable
+## Pruebas de punta a punta: Chrome contra el Supabase local
 
-- Esquema inicial: hogares, miembros, mascotas y actividades, con reglas RLS por hogar.
-- Login y registro con Supabase Auth.
-- Pantallas para ver y marcar las actividades del día.
+`npm run e2e` levanta la app en el puerto 5174, apuntando al Supabase local, y simula en Chrome
+a varias personas del hogar: ingresar, crear el hogar, invitar, gestionar mascotas y tareas y
+marcar lo del día. Los correos se leen desde el buzón de prueba local (Mailpit).
+
+```sh
+npx supabase start
+npm run e2e              # todas
+npm run e2e -- hoy       # solo una: ingreso, hogar, mascotas u hoy
+```
+
+Nunca tocan el proyecto real: el script se niega a correr si Supabase no es local, y cualquier
+solicitud a `supabase.co` se bloquea y hace fallar la prueba. Usa el puerto 5174 con
+`--strictPort` para no conectarse por error a un `npm run dev` abierto en el 5173. Si Chrome no
+está en la ruta por defecto, se indica con la variable `CHROME_PATH`.
+
+## Pendiente para la primera versión
+
+- Ver en tiempo real lo que marcan los demás (Supabase Realtime).
+- Historial de cuidados por mascota.
+- Publicar la app como PWA instalable y agregar su URL en las Redirect URLs de Supabase.
