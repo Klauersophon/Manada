@@ -68,6 +68,39 @@ try {
   await caro.reload()
   await esperarTexto(caro, 'Invitación no válida')
   ok('un link revocado muestra que no es válido', true)
+
+  // Roles: el hogar nunca queda sin admin
+  const opcion = (page, t) =>
+    page.evaluate(t => {
+      const b = [...document.querySelectorAll('[role=dialog] button')].find(b => b.innerText.includes(t))
+      return b ? { activa: !b.disabled, elegida: b.getAttribute('aria-pressed') === 'true' } : null
+    }, t)
+  const elegir = (page, t) =>
+    page.evaluate(t => [...document.querySelectorAll('[role=dialog] button')].find(b => b.innerText.includes(t)).click(), t)
+  ok('el admin ve cuántas tareas hizo cada uno esta semana', (await texto(ana)).includes('esta semana'))
+  await irA(beto, 'Manada')
+  await beto.waitForFunction(() => /Beto \(tú\)\s+Miembro/.test(document.body.innerText), { timeout: 10000 })
+  ok('un miembro no ve ese conteo', !(await texto(beto)).includes('esta semana'))
+  ok('un miembro no puede abrir la hoja de roles', (await beto.$$('button[aria-label^="Cambiar el rol"]')).length === 0)
+  await ana.click('button[aria-label="Cambiar el rol de Ana"]')
+  await ana.waitForSelector('[role=dialog]')
+  ok('la única admin no puede pasar a miembro', JSON.stringify(await opcion(ana, 'Miembro')) === '{"activa":false,"elegida":false}')
+  ok('la hoja explica por qué', (await ana.$eval('[role=dialog]', d => d.innerText)).includes('Es la única persona que administra'))
+  await ana.keyboard.press('Escape')
+  await ana.click('button[aria-label="Cambiar el rol de Beto"]')
+  await ana.waitForSelector('[role=dialog]')
+  await elegir(ana, 'Admin')
+  await ana.waitForFunction(() => /Beto\s+Admin/.test(document.body.innerText), { timeout: 10000 })
+  ok('el admin puede nombrar a otra persona admin', true)
+  await ana.click('button[aria-label="Cambiar el rol de Ana"]')
+  await ana.waitForSelector('[role=dialog]')
+  await elegir(ana, 'Miembro')
+  await ana.waitForFunction(() => /Ana \(tú\)\s+Miembro/.test(document.body.innerText), { timeout: 10000 })
+  ok('con otro admin, puede quitarse el rol', true)
+  ok('al dejar de ser admin, deja de ver lo de admin', !(await texto(ana)).includes('Invitar a tu familia'))
+  await beto.reload()
+  await beto.waitForFunction(() => /Beto \(tú\)\s+Admin/.test(document.body.innerText), { timeout: 10000 })
+  ok('el nuevo admin ve las herramientas de admin', (await texto(beto)).includes('Invitar a tu familia'))
   await terminar()
 } catch (e) {
   await terminar(e)

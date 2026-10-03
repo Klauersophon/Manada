@@ -1,92 +1,21 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { supabase } from '../lib/supabase'
-import {
-  alerta, boton, botonAgregar, botonSecundario, campo, etiquetaCampo, etiquetaSeccion, glifo,
-} from '../components/estilos'
-import { ESPECIES, especie } from './especies'
+import { alerta, botonAgregar, botonSecundario, etiquetaSeccion, glifo } from '../components/estilos'
+import { resumenMascota } from './edad'
+import { especie } from './especies'
+import FormMascota, { type DatosMascota } from './FormMascota'
 
-type Mascota = {
-  id: string
-  name: string
-  species: string
-  notes: string | null
-  archived_at: string | null
-}
-type DatosMascota = Pick<Mascota, 'name' | 'species' | 'notes'>
+type Mascota = DatosMascota & { id: string; archived_at: string | null }
 
 async function buscarMascotas(circleId: string) {
   const { data, error } = await supabase
     .from('pets')
-    .select('id, name, species, notes, archived_at')
+    .select('id, name, species, breed, birth_date, birth_year, vet_name, vet_phone, notes, archived_at')
     .eq('circle_id', circleId)
     .order('name')
   if (error) throw error
   return data
-}
-
-function FormMascota({
-  inicial,
-  onGuardar,
-  onCancelar,
-}: {
-  inicial?: DatosMascota
-  onGuardar: (datos: DatosMascota) => Promise<void>
-  onCancelar: () => void
-}) {
-  const [nombre, setNombre] = useState(inicial?.name ?? '')
-  const [tipo, setTipo] = useState(inicial?.species ?? 'dog')
-  const [notas, setNotas] = useState(inicial?.notes ?? '')
-  const [ocupado, setOcupado] = useState(false)
-
-  async function enviar(e: FormEvent) {
-    e.preventDefault()
-    setOcupado(true)
-    await onGuardar({ name: nombre.trim(), species: tipo, notes: notas.trim() || null })
-    setOcupado(false)
-  }
-
-  return (
-    <form onSubmit={enviar} className="space-y-3 rounded-[14px] border border-line bg-card p-4">
-      <label htmlFor="mascota-nombre" className={etiquetaCampo}>Nombre</label>
-      <input
-        id="mascota-nombre"
-        required
-        pattern=".*\S.*"
-        value={nombre}
-        onChange={e => setNombre(e.target.value)}
-        className={campo}
-      />
-      <label htmlFor="mascota-especie" className={etiquetaCampo}>Especie</label>
-      <select
-        id="mascota-especie"
-        value={tipo}
-        onChange={e => setTipo(e.target.value)}
-        className={campo}
-      >
-        {ESPECIES.map(e => (
-          <option key={e.valor} value={e.valor}>{e.emoji} {e.nombre}</option>
-        ))}
-      </select>
-      <label htmlFor="mascota-notas" className={etiquetaCampo}>Notas (opcional)</label>
-      <textarea
-        id="mascota-notas"
-        rows={3}
-        placeholder="Alergias, comida, veterinario..."
-        value={notas}
-        onChange={e => setNotas(e.target.value)}
-        className={campo}
-      />
-      <div className="flex gap-2">
-        <button type="submit" disabled={ocupado} className={boton}>
-          {ocupado ? 'Guardando...' : 'Guardar'}
-        </button>
-        <button type="button" onClick={onCancelar} className={botonSecundario}>
-          Cancelar
-        </button>
-      </div>
-    </form>
-  )
 }
 
 // Mascotas del hogar. RLS deja que todos los miembros las vean y que solo los admins las cambien,
@@ -165,7 +94,7 @@ function Mascotas({ circleId, esAdmin }: { circleId: string; esAdmin: boolean })
                 <Link to={`/mascotas/${m.id}`} className="font-display text-[17px] font-semibold">
                   {m.name}
                 </Link>
-                <p className="text-[12.5px] text-ink-soft">{especie(m.species).nombre}</p>
+                <p className="text-[12.5px] text-ink-soft">{resumenMascota(m)}</p>
                 {m.notes && <p className="text-sm whitespace-pre-line">{m.notes}</p>}
                 <div className="flex flex-wrap gap-2 pt-1">
                   <Link to={`/mascotas/${m.id}`} className={botonSecundario}>

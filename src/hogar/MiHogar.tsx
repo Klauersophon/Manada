@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import Pantalla from '../components/Pantalla'
 import { useSesion } from '../auth/sesion'
 import Avatar from '../components/Avatar'
 import { alerta, etiquetaSeccion, fila } from '../components/estilos'
+import { fechaLocal } from '../hoy/calendario'
 import Mascotas from '../mascotas/Mascotas'
+import { lunesDe } from '../semana/reglas'
+import HojaRol from './HojaRol'
 import type { Hogar } from './useMiHogar'
 
 type Miembro = { user_id: string; display_name: string; role: string }
@@ -22,24 +25,40 @@ async function buscarDatos(circleId: string, esAdmin: boolean) {
     .order('joined_at')
   if (m.error) throw m.error
 
-  // RLS solo deja ver las invitaciones a los admins.
-  if (!esAdmin) return { miembros: m.data, invitaciones: [] }
-  const i = await supabase
-    .from('invites')
-    .select('code, expires_at')
-    .eq('circle_id', circleId)
-    .eq('revoked', false)
-    .gt('expires_at', new Date().toISOString())
-    .order('created_at', { ascending: false })
+  // RLS solo deja ver las invitaciones a los admins. El conteo de la semana también es solo para
+  // admins, como el reparto en Semana.
+  if (!esAdmin) return { miembros: m.data, invitaciones: [], hechasPor: new Map<string, number>() }
+  const [i, r] = await Promise.all([
+    supabase
+      .from('invites')
+      .select('code, expires_at')
+      .eq('circle_id', circleId)
+      .eq('revoked', false)
+      .gt('expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('care_logs')
+      .select('done_by, care_tasks!inner(pets!inner(circle_id))')
+      .eq('care_tasks.pets.circle_id', circleId)
+      .gte('date', fechaLocal(lunesDe(new Date()))),
+  ])
   if (i.error) throw i.error
-  return { miembros: m.data, invitaciones: i.data }
+  if (r.error) throw r.error
+  const hechasPor = new Map<string, number>()
+  for (const { done_by } of r.data) if (done_by) hechasPor.set(done_by, (hechasPor.get(done_by) ?? 0) + 1)
+  return { miembros: m.data, invitaciones: i.data, hechasPor }
 }
 
-function MiHogar({ hogar }: { hogar: Hogar }) {
+// `onRolPropio` recarga el hogar cuando la persona cambia su propio rol, porque cambia lo que
+// puede ver y hacer en toda la app.
+function MiHogar({ hogar, onRolPropio }: { hogar: Hogar; onRolPropio: () => void }) {
   const { id, esAdmin } = hogar
   const yo = useSesion().sesion?.user.id
   const [miembros, setMiembros] = useState<Miembro[]>([])
   const [invitaciones, setInvitaciones] = useState<Invitacion[]>([])
+  const [hechasPor, setHechasPor] = useState(new Map<string, number>())
+  const [hojaDe, setHojaDe] = useState<Miembro | null>(null)
+  const cerrarHoja = useCallback(() => setHojaDe(null), [])
   const [aviso, setAviso] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [ocupado, setOcupado] = useState(false)
@@ -53,6 +72,7 @@ function MiHogar({ hogar }: { hogar: Hogar }) {
         if (!vigente) return
         setMiembros(d.miembros)
         setInvitaciones(d.invitaciones)
+        setHechasPor(d.hechasPor)
       },
       e => vigente && setError(e.message),
     )
@@ -60,6 +80,20 @@ function MiHogar({ hogar }: { hogar: Hogar }) {
       vigente = false
     }
   }, [id, esAdmin, version])
+
+  async function cambiarRol(m: Miembro, rol: 'admin' | 'caregiver') {
+    setHojaDe(null)
+    if (m.role === rol) return
+    setError(null)
+    const { error } = await supabase
+      .from('memberships')
+      .update({ role: rol })
+      .eq('circle_id', id)
+      .eq('user_id', m.user_id)
+    if (error) return setError(error.message)
+    if (m.user_id === yo) onRolPropio()
+    else cargar()
+  }
 
   async function crearInvitacion() {
     setOcupado(true)
@@ -104,22 +138,50 @@ function MiHogar({ hogar }: { hogar: Hogar }) {
       <section className="space-y-2.5">
         <h2 className={etiquetaSeccion}>Miembros</h2>
         <ul className="space-y-2" aria-label="Miembros">
-          {miembros.map(m => (
-            <li key={m.user_id} className={fila}>
-              <Avatar id={m.user_id} nombre={m.display_name} />
-              <span className="min-w-0 flex-1 font-semibold">
-                {m.user_id === yo ? `${m.display_name} (tú)` : m.display_name}
-              </span>
-              <span
-                className={`rounded-full border px-2 py-0.5 text-[11px] ${
-                  m.role === 'admin' ? 'border-moss font-semibold text-moss' : 'border-line-strong font-medium text-ink-soft'
-                }`}
-              >
-                {m.role === 'admin' ? 'Admin' : 'Miembro'}
-              </span>
-            </li>
-          ))}
+          {miembros.map(m => {
+            const contenido = (
+              <>
+                <Avatar id={m.user_id} nombre={m.display_name} />
+                <span className="min-w-0 flex-1">
+                  <span className="block font-semibold">
+                    {m.user_id === yo ? `${m.display_name} (tú)` : m.display_name}{' '}
+                    <span
+                      className={`ml-1 rounded-full border px-2 py-0.5 align-[1px] text-[11px] ${
+                        m.role === 'admin' ? 'border-moss font-semibold text-moss' : 'border-line-strong font-medium text-ink-soft'
+                      }`}
+                    >
+                      {m.role === 'admin' ? 'Admin' : 'Miembro'}
+                    </span>
+                  </span>
+                </span>
+                {esAdmin && (
+                  <span className="text-right">
+                    <b className="block font-display text-[21px] leading-none font-bold">{hechasPor.get(m.user_id) ?? 0}</b>
+                    <span className="text-[11px] text-ink-faint">esta semana</span>
+                  </span>
+                )}
+              </>
+            )
+            return (
+              <li key={m.user_id}>
+                {esAdmin ? (
+                  <button
+                    onClick={() => setHojaDe(m)}
+                    aria-label={`Cambiar el rol de ${m.display_name}`}
+                    className={`${fila} w-full text-left active:bg-sage`}
+                  >
+                    {contenido}
+                  </button>
+                ) : (
+                  <div className={fila}>{contenido}</div>
+                )}
+              </li>
+            )
+          })}
         </ul>
+        {esAdmin && (
+          <p className="text-[12.5px] text-ink-faint">Toca a alguien para darle o quitarle la administración.</p>
+        )}
       </section>
 
       {hogar.esAdmin && (
@@ -164,6 +226,16 @@ function MiHogar({ hogar }: { hogar: Hogar }) {
       )}
 
       {error && <p role="alert" className={alerta}>{error}</p>}
+
+      {hojaDe && (
+        <HojaRol
+          miembro={hojaDe}
+          esYo={hojaDe.user_id === yo}
+          esUltimoAdmin={hojaDe.role === 'admin' && miembros.filter(m => m.role === 'admin').length === 1}
+          onElegir={rol => cambiarRol(hojaDe, rol)}
+          onCerrar={cerrarHoja}
+        />
+      )}
     </Pantalla>
   )
 }
