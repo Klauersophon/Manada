@@ -3,8 +3,9 @@
 App para que los miembros de un grupo familiar coordinen el cuidado cotidiano de sus mascotas:
 quién paseó al perro, quién dio la comida, qué falta hacer hoy.
 
-**Estado actual:** hay ingreso con enlace mágico o código por correo, y el esquema de datos con
-sus reglas de seguridad está en Supabase. Faltan las pantallas de hogar, mascotas y tareas.
+**Estado actual:** se puede ingresar, crear el hogar e invitar a la familia, registrar mascotas
+con sus tareas y marcar en "Hoy" lo que ya se hizo. Falta ver los cambios de los demás en tiempo
+real, el historial por mascota y publicar la app para instalarla en el celular.
 
 ## Stack: React + Vite en el front, Supabase como backend
 
@@ -45,6 +46,7 @@ del repo: hay que copiarla a mano en Authentication → Email Templates, en "Mag
 | `npm run dev`     | Servidor de desarrollo con recarga en vivo |
 | `npm run build`   | Chequeo de tipos y build de producción    |
 | `npm run lint`    | ESLint sobre todo el proyecto             |
+| `npm test`        | Tests de Vitest (por ahora, el cálculo de qué toca cada día) |
 | `npm run preview` | Sirve el build de producción en local     |
 | `npm run db:types` | Regenera los tipos de TypeScript desde el esquema de Supabase |
 | `npm run db:test`  | Corre los tests de seguridad de la base (requiere `npx supabase start`) |

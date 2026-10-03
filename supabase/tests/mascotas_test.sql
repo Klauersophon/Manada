@@ -48,9 +48,9 @@ select throws_ok(
 
 -- Lo que intentó Beto no tuvo efecto
 reset role;
-select is((select name from public.pets), 'Lunita', 'un miembro no puede renombrar mascotas');
-select is((select archived_at from public.pets), null, 'un miembro no puede archivar mascotas');
-select is((select count(*) from public.pets), 1::bigint, 'un miembro no puede borrar mascotas');
+select is((select name from public.pets where circle_id = current_setting('test.circle')::uuid), 'Lunita', 'un miembro no puede renombrar mascotas');
+select is((select archived_at from public.pets where circle_id = current_setting('test.circle')::uuid), null, 'un miembro no puede archivar mascotas');
+select is((select count(*) from public.pets where circle_id = current_setting('test.circle')::uuid), 1::bigint, 'un miembro no puede borrar mascotas');
 
 select * from finish();
 rollback;

@@ -28,7 +28,7 @@ export type Database = {
           date: string
           done_at?: string | null
           done_by?: string | null
-          done_by_name: string
+          done_by_name?: string
           id?: string
           photo_url?: string | null
           task_id: string
