@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
+    "e2e": "node e2e/correr.mjs",
     "db:types": "supabase gen types typescript --linked --schema public > src/lib/database.types.ts",
     "db:test": "supabase test db"
   },
@@ -29,6 +30,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.6",
     "globals": "^17.12.0",
+    "puppeteer-core": "^25.12.0",
     "supabase": "^2.119.0",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
