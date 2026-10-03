@@ -12,6 +12,7 @@ function Pestanas() {
   const rutaMascota = elegida ? `/mascotas/${elegida}` : '/mascotas'
   const tabs = [
     { a: '/', icono: '☀️', texto: 'Hoy', activa: pathname === '/' },
+    { a: '/semana', icono: '📋', texto: 'Semana', activa: pathname === '/semana' },
     { a: '/manada', icono: '👥', texto: 'Manada', activa: pathname === '/manada' },
     { a: rutaMascota, icono: '🐾', texto: 'Mascota', activa: pathname.startsWith('/mascotas') },
   ]
