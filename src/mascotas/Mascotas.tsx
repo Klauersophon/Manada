@@ -165,16 +165,21 @@ function Mascotas({ circleId, esAdmin }: { circleId: string; esAdmin: boolean })
                 </Link>
                 <p className="text-sm text-white/70">{especie(m.species).nombre}</p>
                 {m.notes && <p className="whitespace-pre-line text-sm">{m.notes}</p>}
-                {esAdmin && (
-                  <div className="flex gap-2 pt-1">
-                    <button onClick={() => setEditando(m.id)} className={botonSecundario}>
-                      Editar
-                    </button>
-                    <button onClick={() => cambiarArchivo(m, true)} className={botonSecundario}>
-                      Archivar
-                    </button>
-                  </div>
-                )}
+                <div className="flex gap-2 pt-1">
+                  <Link to={`/mascotas/${m.id}`} className={botonSecundario}>
+                    Tareas
+                  </Link>
+                  {esAdmin && (
+                    <>
+                      <button onClick={() => setEditando(m.id)} className={botonSecundario}>
+                        Editar
+                      </button>
+                      <button onClick={() => cambiarArchivo(m, true)} className={botonSecundario}>
+                        Archivar
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             </li>
           ),

@@ -13,9 +13,10 @@ import { fechaLocal, hora, ordenarDelDia, responsable, tocaEl } from './calendar
 async function buscarDia(circleId: string, fecha: string) {
   const mascotas = await supabase
     .from('pets')
-    .select('id', { count: 'exact', head: true })
+    .select('id, name, species')
     .eq('circle_id', circleId)
     .is('archived_at', null)
+    .order('name')
   if (mascotas.error) throw mascotas.error
 
   const t = await supabase
@@ -30,7 +31,7 @@ async function buscarDia(circleId: string, fecha: string) {
 
   const ids = t.data.map(x => x.id)
   if (ids.length === 0)
-    return { hayMascotas: (mascotas.count ?? 0) > 0, tareas: t.data, registros: [], asignaciones: [] }
+    return { mascotas: mascotas.data, tareas: t.data, registros: [], asignaciones: [] }
 
   const [r, a] = await Promise.all([
     supabase
@@ -42,14 +43,14 @@ async function buscarDia(circleId: string, fecha: string) {
   ])
   if (r.error) throw r.error
   if (a.error) throw a.error
-  return { hayMascotas: true, tareas: t.data, registros: r.data, asignaciones: a.data }
+  return { mascotas: mascotas.data, tareas: t.data, registros: r.data, asignaciones: a.data }
 }
 
 type Dia = Awaited<ReturnType<typeof buscarDia>>
 
 // Mensaje cuando hoy no hay nada que mostrar, según qué le falta al hogar.
 function Vacio({ dia, esAdmin }: { dia: Dia; esAdmin: boolean }) {
-  if (!dia.hayMascotas)
+  if (dia.mascotas.length === 0)
     return (
       <p>
         Todavía no hay mascotas en el hogar.{' '}
@@ -61,11 +62,21 @@ function Vacio({ dia, esAdmin }: { dia: Dia; esAdmin: boolean }) {
       </p>
     )
   if (dia.tareas.length === 0)
-    return (
-      <p>
-        Todavía no hay tareas.{' '}
-        {esAdmin ? 'Entra a una mascota desde Hogar y define sus tareas.' : 'Un admin puede definirlas.'}
-      </p>
+    return esAdmin ? (
+      <div className="space-y-3">
+        <p>Todavía no hay tareas. Define qué hay que hacer con cada mascota:</p>
+        <ul className="space-y-2" aria-label="Definir tareas">
+          {dia.mascotas.map(m => (
+            <li key={m.id}>
+              <Link to={`/mascotas/${m.id}`} className={`${boton} block text-center`}>
+                {especie(m.species).emoji} Definir tareas de {m.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ) : (
+      <p>Todavía no hay tareas. Un admin del hogar puede definirlas.</p>
     )
   return <p>Hoy no hay tareas programadas. 🎉</p>
 }
