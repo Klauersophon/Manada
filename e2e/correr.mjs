@@ -5,7 +5,7 @@
 // error a un `npm run dev` en el 5173, que apunta al Supabase real.
 import { execSync, spawn, spawnSync } from 'node:child_process'
 
-const PRUEBAS = ['ingreso', 'hogar', 'mascotas', 'hoy', 'semana']
+const PRUEBAS = ['ingreso', 'hogar', 'mascotas', 'hoy', 'semana', 'vivo']
 const PUERTO = 5174
 const elegidas = process.argv.slice(2).length ? process.argv.slice(2) : PRUEBAS
 

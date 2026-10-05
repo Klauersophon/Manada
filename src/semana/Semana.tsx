@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router'
+import { enLista, useEnVivo } from '../lib/enVivo'
 import { supabase } from '../lib/supabase'
 import { useSesion } from '../auth/sesion'
 import Avatar from '../components/Avatar'
@@ -81,6 +82,21 @@ function Semana({
       vigente = false
     }
   }, [mascota.id, desde, hasta, version])
+
+  const idsTareas = datos?.tareas.map(t => t.id) ?? []
+  useEnVivo(
+    'semana',
+    [
+      ...(idsTareas.length
+        ? [
+            { tabla: 'care_logs' as const, filtro: enLista('task_id', idsTareas) },
+            { tabla: 'task_assignments' as const, filtro: enLista('task_id', idsTareas) },
+          ]
+        : []),
+      { tabla: 'care_tasks', filtro: `pet_id=eq.${mascota.id}` },
+    ],
+    () => setVersion(v => v + 1),
+  )
 
   if (!datos) return error ? <p role="alert" className={alerta}>{error}</p> : <p>Cargando...</p>
 
