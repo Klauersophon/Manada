@@ -71,7 +71,13 @@ export async function unirseConCorreo(page, link, email) {
   await ingresarConCodigo(page, email)
 }
 
-export const browser = await puppeteer.launch({ executablePath: CHROME, headless: true })
+// En GitHub Actions (Ubuntu 24.04) el sandbox de Chrome no puede arrancar por las restricciones de
+// AppArmor; ahí se desactiva. En una computadora normal se deja como está.
+export const browser = await puppeteer.launch({
+  executablePath: CHROME,
+  headless: true,
+  args: process.env.CI ? ['--no-sandbox'] : [],
+})
 
 // Seguro: cualquier solicitud al Supabase real se bloquea y hace fallar la prueba.
 const remotas = []
