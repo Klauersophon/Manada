@@ -1,0 +1,63 @@
+# Pruebas en cada PR y en cada push a main. Así no depende de que la computadora donde se
+# trabaja tenga Docker: en GitHub siempre corren las mismas pruebas que en local.
+name: Pruebas
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Si llega un push nuevo al mismo PR, se cancela la corrida anterior.
+concurrency:
+  group: pruebas-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  rapidas:
+    name: Lint, build y Vitest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - run: npm test
+
+  base-y-e2e:
+    name: pgTAP y e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      # Supabase local desde cero: aplica todas las migraciones de supabase/migrations.
+      # Mismo set de servicios que en local; Realtime se incluye porque lo usa la prueba `vivo`.
+      - name: Levantar Supabase local
+        run: npx supabase start -x storage-api,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
+
+      - name: pgTAP
+        run: npm run db:test
+
+      # Usa el Chrome que trae la imagen de GitHub (/usr/bin/google-chrome).
+      - name: e2e
+        run: npm run e2e
+
+      - name: Logs de Supabase si algo falló
+        if: failure()
+        run: |
+          docker logs supabase_auth_manada --tail 80 || true
+          docker logs supabase_realtime_manada --tail 80 || true

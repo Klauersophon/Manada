@@ -99,6 +99,10 @@ npm run db:types   # regenera src/lib/database.types.ts desde el proyecto vincul
 - **Pedir confirmación explícita antes de `npx supabase db push` y antes de subir una rama o abrir
   un PR.** Oscar hace el merge. A veces sube o mergea por su cuenta, así que antes de dar algo por
   pendiente hay que revisar `gh pr list` y `git log --branches --not --remotes`.
+- **GitHub Actions corre todas las pruebas en cada PR y en cada push a `main`**
+  (`.github/workflows/pruebas.yml`): lint, build y Vitest en un trabajo, y pgTAP y e2e con
+  Supabase local en otro. Un PR con alguna en rojo no se mergea, aunque en la computadora del
+  momento no haya Docker para correrlas.
 - **Después de cada `db push`,** `npm run db:types` debe coincidir con los tipos commiteados
   (comparar con `git diff --ignore-cr-at-eol`).
 - **`gh` tiene dos cuentas:** KlauerPE (Buk, sin permisos aquí) y Klauersophon (dueña del repo).

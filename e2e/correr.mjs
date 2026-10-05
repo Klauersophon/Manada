@@ -29,6 +29,8 @@ function levantarVite({ api, key }) {
   const vite = spawn('npx', ['vite', '--port', String(PUERTO), '--strictPort'], {
     env: { ...process.env, VITE_SUPABASE_URL: api, VITE_SUPABASE_ANON_KEY: key, NO_COLOR: '1' },
     shell: true,
+    // En Linux y macOS, un grupo de procesos propio permite cerrar la shell y Vite juntos.
+    detached: process.platform !== 'win32',
   })
   return new Promise((resolve, reject) => {
     let log = ''
@@ -54,9 +56,10 @@ function levantarVite({ api, key }) {
 }
 
 function apagar(proceso) {
-  // Con shell: true, kill() solo cierra la shell. En Windows hay que cerrar todo el árbol.
+  // Con shell: true, kill() solo cierra la shell y Vite queda vivo. En Windows se cierra el árbol
+  // con taskkill; en Linux y macOS, el grupo de procesos (pid negativo).
   if (process.platform === 'win32') spawnSync('taskkill', ['/pid', String(proceso.pid), '/T', '/F'])
-  else proceso.kill()
+  else process.kill(-proceso.pid, 'SIGTERM')
 }
 
 const local = supabaseLocal()
