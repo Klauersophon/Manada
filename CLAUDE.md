@@ -26,8 +26,7 @@ decisión, el estado del plan, una trampa nueva), se actualiza aquí en el mismo
    invitación de 8 caracteres sin letras confusas. Hecho (PR #15). Requiere "Allow anonymous
    sign-ins" activo en Supabase (dashboard → Authentication → Sign In / Providers) — confirmado
    activo en producción el 2026-10-05.
-6. Tiempo real: "Hoy", Semana y Manada se actualizan solas con Supabase Realtime. Hecho (PR
-   pendiente).
+6. Tiempo real: "Hoy", Semana y Manada se actualizan solas con Supabase Realtime. Hecho (PR #17).
 
 ## Comandos
 
