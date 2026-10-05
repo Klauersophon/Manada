@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router'
+import { enLista, useEnVivo } from '../lib/enVivo'
 import { supabase } from '../lib/supabase'
 import { useSesion } from '../auth/sesion'
 import Aviso, { type DatosAviso } from '../components/Aviso'
@@ -134,6 +135,24 @@ function Hoy({ hogar }: { hogar: Hogar }) {
       vigente = false
     }
   }, [hogar.id, fecha, version])
+
+  // Lo que marcan o reparten los demás aparece sin recargar. Al volver a la app se recarga igual
+  // (efecto de arriba), porque el celular corta la conexión en segundo plano.
+  const idsTareas = dia?.tareas.map(t => t.id) ?? []
+  const idsMascotas = dia?.mascotas.map(m => m.id) ?? []
+  useEnVivo(
+    'hoy',
+    [
+      ...(idsTareas.length
+        ? [
+            { tabla: 'care_logs' as const, filtro: enLista('task_id', idsTareas) },
+            { tabla: 'task_assignments' as const, filtro: enLista('task_id', idsTareas) },
+          ]
+        : []),
+      ...(idsMascotas.length ? [{ tabla: 'care_tasks' as const, filtro: enLista('pet_id', idsMascotas) }] : []),
+    ],
+    recargar,
+  )
 
   const fechaTexto = ahora.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' })
   const antetitulo = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1).replace(',', '')

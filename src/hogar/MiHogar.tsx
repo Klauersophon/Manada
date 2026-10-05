@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useEnVivo } from '../lib/enVivo'
 import { supabase } from '../lib/supabase'
 import Pantalla from '../components/Pantalla'
 import { useSesion } from '../auth/sesion'
@@ -82,6 +83,9 @@ function MiHogar({ hogar, onRolPropio }: { hogar: Hogar; onRolPropio: () => void
       vigente = false
     }
   }, [id, esAdmin, version])
+
+  // Quien se une o cambia de rol aparece sin recargar.
+  useEnVivo('manada', [{ tabla: 'memberships', filtro: `circle_id=eq.${id}` }], cargar)
 
   async function cambiarRol(m: Miembro, rol: 'admin' | 'caregiver') {
     setHojaDe(null)

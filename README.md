@@ -3,9 +3,10 @@
 App para que los miembros de un grupo familiar coordinen el cuidado cotidiano de sus mascotas:
 quién paseó al perro, quién dio la comida, qué falta hacer hoy.
 
-**Estado actual:** publicada como app instalable. Se puede crear el hogar e invitar a la
-familia, registrar mascotas con sus tareas, repartir y marcar en "Hoy" lo del día, y ver y
-planificar la semana de cada mascota.
+**Estado actual:** publicada como app instalable en https://manada-iota.vercel.app. Se puede
+crear el hogar e invitar a la familia (con o sin cuenta), registrar mascotas con su ficha y sus
+tareas, repartir y marcar en "Hoy" lo del día, y ver y planificar la semana de cada mascota. Lo
+que hace cada persona les aparece a los demás al instante.
 
 ## Stack: React + Vite en el front, Supabase como backend
 
@@ -69,7 +70,7 @@ marcar lo del día. Los correos se leen desde el buzón de prueba local (Mailpit
 ```sh
 npx supabase start
 npm run e2e              # todas
-npm run e2e -- hoy       # solo una: ingreso, hogar, mascotas, hoy o semana
+npm run e2e -- hoy       # solo una: ingreso, hogar, mascotas, hoy, semana o vivo
 ```
 
 Nunca tocan el proyecto real: el script se niega a correr si Supabase no es local, y cualquier
@@ -77,11 +78,8 @@ solicitud a `supabase.co` se bloquea y hace fallar la prueba. Usa el puerto 5174
 `--strictPort` para no conectarse por error a un `npm run dev` abierto en el 5173. Si Chrome no
 está en la ruta por defecto, se indica con la variable `CHROME_PATH`.
 
-## Pendiente para la primera versión
+## Después de la primera versión
 
-El diseño sigue la maqueta de Manada, y se está adoptando por pasos. Faltan:
-
-- Manada y ficha: cambiar roles sin dejar el hogar sin admin, y raza, edad y veterinario de la
-  mascota.
-- Unirse sin crear cuenta, con un código corto.
-- Ver en tiempo real lo que marcan los demás (Supabase Realtime).
+La primera versión, que sigue la maqueta de diseño de Manada, está completa. Ideas para después:
+recordatorios en el celular, fotos de las mascotas, varios hogares por persona y entrar con
+Google.

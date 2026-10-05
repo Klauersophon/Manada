@@ -6,7 +6,7 @@ toca y quién ya lo hizo. Proyecto personal de Oscar (GitHub: Klauersophon).
 Este archivo es el contexto compartido entre computadoras y sesiones. Si algo cambia (una
 decisión, el estado del plan, una trampa nueva), se actualiza aquí en el mismo PR.
 
-## Estado: publicada y adoptando la maqueta de diseño (paso 6 de 6)
+## Estado: publicada, con la maqueta de diseño adoptada (6 de 6 pasos)
 
 - **Producción:** https://manada-iota.vercel.app. Es la única URL pública; las previews de Vercel
   y el alias `manada-manada-kv.vercel.app` piden login de Vercel.
@@ -26,7 +26,7 @@ decisión, el estado del plan, una trampa nueva), se actualiza aquí en el mismo
    invitación de 8 caracteres sin letras confusas. Hecho (PR #15). Requiere "Allow anonymous
    sign-ins" activo en Supabase (dashboard → Authentication → Sign In / Providers) — confirmado
    activo en producción el 2026-10-05.
-6. **Siguiente:** Tiempo real: que "Hoy" se actualice sola con Supabase Realtime.
+6. Tiempo real: "Hoy", Semana y Manada se actualizan solas con Supabase Realtime. Hecho (PR #17).
 
 ## Comandos
 
@@ -49,6 +49,9 @@ npm run db:types   # regenera src/lib/database.types.ts desde el proyecto vincul
   `semana/reglas.ts`, `mascotas/edad.ts`).
 - `src/components/`: `Pantalla` (encabezado y pestañas), `estilos.ts` (clases compartidas),
   `Aviso`, `Avatar`.
+- `src/lib/enVivo.ts`: `useEnVivo()` escucha cambios de tablas con Realtime y le pide a la
+  pantalla que recargue. Las tablas tienen que estar en la publicación `supabase_realtime`
+  (migración `tiempo_real`); si se escucha una tabla nueva, hay que agregarla ahí.
 - `supabase/migrations/`: todo cambio de esquema va por migración, nunca desde el dashboard.
 - `supabase/tests/`: pgTAP de las reglas de seguridad (RLS, RPC, triggers).
 - `e2e/`: pruebas de punta a punta con puppeteer-core; `correr.mjs` las orquesta.
@@ -81,6 +84,9 @@ npm run db:types   # regenera src/lib/database.types.ts desde el proyecto vincul
 - **Cada pestaña recuerda su propia mascota elegida** ("Hoy" tiene además "Todas").
 - **La pestaña se llama "Mascota", no "Perfil".**
 - **Recordatorios push: fuera de la primera versión.**
+- **Tiempo real silencioso:** lo que hacen los demás aparece en la lista y en "Hoy en la manada",
+  sin avisos emergentes. "Hoy" igual recarga al volver a la app, porque el celular corta el
+  WebSocket en segundo plano.
 - **Textos neutros en género:** "Te damos la bienvenida", rol "Miembro".
 - **Las acciones importantes son botones visibles, no links de texto.** Oscar no encontró dónde
   definir tareas cuando era un nombre subrayado.
@@ -112,7 +118,8 @@ npm run db:types   # regenera src/lib/database.types.ts desde el proyecto vincul
 - **No usar `supabase db reset`:** después de un reset, auth deja de enviar correos (no alcanza
   las plantillas en Kong). Para migraciones nuevas, usar `npx supabase migration up --local`.
 - **Levantar solo lo necesario:** `npx supabase start -x
-  realtime,storage-api,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor`.
+  storage-api,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor`. Realtime ya
+  no se puede excluir: la prueba `vivo` lo necesita.
 - **`supabase start` puede restaurar una copia en caché desatrasada.** Si `npm run db:test` falla
   con un resultado raro justo después de un `start`, revisar
   `docker exec -i supabase_db_manada psql -U postgres -At -c "select version from
