@@ -1,7 +1,7 @@
 // Vista Semana: lo hecho hasta hoy, el plan de los próximos días y el reparto. Ana es admin y
 // Beto es miembro.
 import {
-  APP, clicTexto, corrida, esperarTexto, ingresarConCodigo, irA, nuevaPagina, ok, terminar, texto,
+  APP, clicTexto, corrida, esperarTexto, ingresarConCodigo, irA, nuevaPagina, ok, terminar, texto, unirseConCorreo,
 } from './comun.mjs'
 
 const DIAS_LARGOS = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
@@ -110,8 +110,7 @@ try {
   await ana.waitForSelector('[data-link]')
   const link = await ana.$eval('[data-link]', p => p.innerText)
   const beto = await nuevaPagina()
-  await beto.goto(link)
-  await ingresarConCodigo(beto, `beto+${corrida}@test.cl`)
+  await unirseConCorreo(beto, link, `beto+${corrida}@test.cl`)
   await esperarTexto(beto, 'Te invitaron a Casa Semana')
   await beto.type('#mi-nombre', 'Beto')
   await clicTexto(beto, 'Unirme')

@@ -62,6 +62,15 @@ export async function ingresarConCodigo(page, email) {
   await page.click('button[type=submit]')
 }
 
+// Abre un link de invitación sin sesión y entra con correo (no como invitado). La pantalla
+// ofrece las dos opciones sin redirigir sola, así que primero hay que elegir "con mi correo".
+export async function unirseConCorreo(page, link, email) {
+  await page.goto(link)
+  await esperarTexto(page, 'Entrar como invitado')
+  await page.evaluate(() => [...document.querySelectorAll('a')].find(a => a.innerText.trim() === 'Ingresar con mi correo').click())
+  await ingresarConCodigo(page, email)
+}
+
 export const browser = await puppeteer.launch({ executablePath: CHROME, headless: true })
 
 // Seguro: cualquier solicitud al Supabase real se bloquea y hace fallar la prueba.

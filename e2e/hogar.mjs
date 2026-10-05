@@ -26,11 +26,14 @@ try {
   ok('la invitación muestra su vencimiento', (await texto(ana)).includes('Vence el'))
   const codigoInv = link.split('/unirse/')[1]
 
-  // Beto abre el link sin sesión, entra con el enlace del correo y vuelve a la invitación
+  // Beto abre el link sin sesión, elige entrar con correo y vuelve a la invitación
   const beto = await nuevaPagina()
   await beto.goto(link)
+  await esperarTexto(beto, 'Entrar como invitado')
+  ok('sin sesión, el link ofrece entrar como invitado o con correo', ruta(beto) === '/unirse/' + codigoInv)
+  await beto.evaluate(() => [...document.querySelectorAll('a')].find(a => a.innerText.trim() === 'Ingresar con mi correo').click())
   await beto.waitForSelector('#correo')
-  ok('sin sesión, el link manda a ingresar recordando la invitación',
+  ok('"Ingresar con mi correo" manda a ingresar recordando la invitación',
     beto.url().endsWith(`/ingresar?volver=${encodeURIComponent('/unirse/' + codigoInv)}`), beto.url())
   const { enlace } = await pedirAcceso(beto, `beto+${corrida}@test.cl`)
   await beto.goto(enlace)

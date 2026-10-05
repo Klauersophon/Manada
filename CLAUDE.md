@@ -23,8 +23,9 @@ decisión, el estado del plan, una trampa nueva), se actualiza aquí en el mismo
 3. Semana: cuadrícula por mascota, historial y plan de días futuros. Hecho (PR #13).
 4. Manada y ficha: roles sin dejar el hogar sin admin, raza, edad y veterinario. Hecho (PR #14).
 5. Invitados sin cuenta (ingreso anónimo, correo opcional después desde Manada) y código de
-   invitación de 8 caracteres sin letras confusas. Hecho (PR pendiente). Requiere "Allow anonymous
-   sign-ins" activo en Supabase (dashboard → Authentication → Sign In / Providers).
+   invitación de 8 caracteres sin letras confusas. Hecho (PR #15). Requiere "Allow anonymous
+   sign-ins" activo en Supabase (dashboard → Authentication → Sign In / Providers) — confirmado
+   activo en producción el 2026-10-05.
 6. **Siguiente:** Tiempo real: que "Hoy" se actualice sola con Supabase Realtime.
 
 ## Comandos
@@ -112,6 +113,12 @@ npm run db:types   # regenera src/lib/database.types.ts desde el proyecto vincul
   las plantillas en Kong). Para migraciones nuevas, usar `npx supabase migration up --local`.
 - **Levantar solo lo necesario:** `npx supabase start -x
   realtime,storage-api,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor`.
+- **`supabase start` puede restaurar una copia en caché desatrasada.** Si `npm run db:test` falla
+  con un resultado raro justo después de un `start`, revisar
+  `docker exec -i supabase_db_manada psql -U postgres -At -c "select version from
+  supabase_migrations.schema_migrations order by version;"` contra `supabase/migrations/`, y
+  correr `npx supabase migration up --local` si falta alguna. `db push` al remoto no sufre esto,
+  porque no usa la copia en caché.
 - **`gen types --local` sale sin formato.** Se editan los tipos a mano y después del `db push` se
   verifican con `npm run db:types`.
 - **El sistema de archivos no distingue mayúsculas:** `Semana.tsx` y `semana.ts` chocan.

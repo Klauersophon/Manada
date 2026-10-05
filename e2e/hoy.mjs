@@ -1,6 +1,6 @@
 // Tareas de cada mascota y la vista "Hoy", con Ana (admin) y Beto (miembro).
 import {
-  APP, clicTexto, corrida, esperarTexto, ingresarConCodigo, irA, nuevaPagina, ok, ruta, terminar, texto,
+  APP, clicTexto, corrida, esperarTexto, ingresarConCodigo, irA, nuevaPagina, ok, ruta, terminar, texto, unirseConCorreo,
 } from './comun.mjs'
 
 const DIAS_LARGOS = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
@@ -134,8 +134,7 @@ try {
   const link = await ana.$eval('[data-link]', p => p.innerText)
 
   const beto = await nuevaPagina()
-  await beto.goto(link)
-  await ingresarConCodigo(beto, `beto+${corrida}@test.cl`)
+  await unirseConCorreo(beto, link, `beto+${corrida}@test.cl`)
   await esperarTexto(beto, 'Te invitaron a Casa Hoy')
   await beto.type('#mi-nombre', 'Beto')
   await clicTexto(beto, 'Unirme')
