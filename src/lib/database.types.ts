@@ -279,6 +279,7 @@ export type Database = {
         Args: { circle_name: string; member_name: string }
         Returns: string
       }
+      generar_codigo_de_invitacion: { Args: never; Returns: string }
       preview_invite: {
         Args: { invite_code: string }
         Returns: {
